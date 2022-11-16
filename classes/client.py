@@ -9,8 +9,8 @@ class Client:
     
     @staticmethod
     def get_client(username: str):
-        stmt_client=f"SELECT password, mail FROM clients WHERE username=\"{username}\""
-        stmt_cars=f"SELECT registration_nr FROM cars WHERE username=\"{username}\""
+        stmt_client=f"SELECT password, mail FROM clients WHERE username=\'{username}\'"
+        stmt_cars=f"SELECT registration_nr FROM cars WHERE username=\'{username}\'"
         db_cur.execute(stmt_client)
         pwd, mail = db_cur.fetchone()
         db_cur.execute(stmt_cars)

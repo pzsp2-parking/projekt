@@ -1,10 +1,7 @@
-CREATE DATABASE IF NOT EXISTS parpa;
-
 CREATE TABLE IF NOT EXISTS clients (
-    username varchar(25) NOT NULL,
+    username varchar(25) PRIMARY KEY,
     password varchar(255) NOT NULL,
-    mail varchar(255) NOT NULL,
-    PRIMARY KEY (username)
+    mail varchar(255) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS cars (

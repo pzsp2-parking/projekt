@@ -1,6 +1,5 @@
 from threading import Lock
-import mysql.connector
-
+import psycopg2
 
 class SingletonMeta(type):
     """
@@ -26,11 +25,11 @@ class SingletonMeta(type):
 class DBConn(metaclass=SingletonMeta):
     host: str = "localhost"
     user="pzsp2"
-    password="parking" # parking_pzsp2
+    password="parking"
     database="parpa"
 
     def __init__(self):
-        self.db_connection=mysql.connector.connect(
+        self.db_connection=psycopg2.connect(
             host=self.host,
             user=self.user,
             password=self.password,
