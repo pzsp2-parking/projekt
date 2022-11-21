@@ -1,40 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+
 import logo from './logo.svg';
 import './App.css';
-
-// const CarList = (props) => {
-//   const positions = props.cars.map(function (car) {
-//     <li>{car}</li>
-//   })
-//   return <ol>{positions}</ol>
-// }
+import Login from './components/Login/Login';
+import Dashboard from './components/Dashboard/Dashboard';
+import Header from './components/Header';
+import useToken from './components/useToken';
 
 function App() {
-  const [username, setUsername] = useState(0);
-  const [cars, setCars] = useState([]);
-
-  useEffect(() => {
-    fetch('/api/example_client').then(res => res.json()).then(data => {
-      setUsername(data.username);
-      setCars(data.cars)
-    });
-  }, []);
+  const { token, removeToken, setToken } = useToken();
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Username: {username}</p>
-        <p>Your cars:</p>
-        <ol>
-          {
-            cars.map(car => {
-              return <li>{car}</li>
-            })
-          }
-        </ol>
-      </header>
-    </div>
+    <BrowserRouter>
+      <div className="App">
+        <Header token={removeToken}/>
+        {!token && token!=="" &&token!== undefined?  
+        <Login setToken={setToken} />
+        :(
+          <>
+            <Routes>
+              <Route exact path="/dashboard" element={<Dashboard token={token} setToken={setToken}/>}></Route>
+            </Routes>
+          </>
+        )}
+      </div>
+    </BrowserRouter>
   );
 }
 
