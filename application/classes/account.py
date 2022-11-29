@@ -1,10 +1,13 @@
+from __future__ import annotations
 from database.db_connector import db_cur
 
 class Account:
-    def __init__(self, account_nr, username, password, mail, phone_nr):
+    def __init__(self, account_nr, username, password, name, surname, mail, phone_nr):
         self.account_nr = account_nr
         self.username=username
         self._password=password
+        self.name=name
+        self.surname=surname
         self.mail=mail
         self.phone_nr=phone_nr
 
@@ -12,8 +15,8 @@ class Account:
         return pwd==self._password
 
 class Client (Account):
-    def __init__(self, account_nr, username, password, mail, phone_nr, cars):
-        super().__init__(account_nr, username, password, mail, phone_nr)
+    def __init__(self, account_nr, username, password, name, surname, mail, phone_nr, cars):
+        super().__init__(account_nr, username, password, name, surname, mail, phone_nr)
         self.cars=cars
     
     @staticmethod
@@ -28,13 +31,13 @@ class Client (Account):
         return client
 
     @staticmethod
-    def add_client(username, password, mail, phone_nr):
-        stmt_create=f"INSERT INTO clients (username, password, mail) VALUES ('guest', 'guest', 'guest');"
+    def add_client(client: Client):
+        stmt_create=f"INSERT INTO clients (username, password, name, surname, mail) VALUES ('guest', 'guest', 'guest');"
         pass
 
 
 class Employee (Account):
-    def __init__(self, account_nr, username, password, mail, phone_nr, role, parking):
+    def __init__(self, account_nr, username, password, name, surname, mail, phone_nr, role, parking):
         super().__init__(account_nr, username, password, mail, phone_nr)
         self.role=role
         self.parking=parking
