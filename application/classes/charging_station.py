@@ -35,8 +35,8 @@ class Charging_station:
     
     def set_order(self, order):
         if self.hour_to_go:
-            self.order = max(0.5, order)      # or 0.5?
+            self.order = max(1, order)      # or 0.5?
         elif self.below_start:
-            self.order = max(0, order)    # or 0?
+            self.order = max(0.5, order)    # or 0?
         else:
             self.order = order
