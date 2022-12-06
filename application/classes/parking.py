@@ -1,5 +1,5 @@
 from __future__ import annotations
-from projekt.application.database.db_connector import db_cur
+from application.database.db_connector import db_cur
 
 
 class Parking:

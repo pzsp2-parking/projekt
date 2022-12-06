@@ -1,7 +1,7 @@
 from __future__ import annotations
-from projekt.application.database.db_connector import db_cur
-import psycopg2
-from car import Car
+from application.database.db_connector import db_cur
+#import psycopg2
+import application.classes.car as car
 
 
 class Account:
@@ -62,7 +62,7 @@ class Client(Account):
         db_cur.execute(stmt_client)
         pwd, mail, phone_no = db_cur.fetchone()
         client = Client(username, pwd, mail, phone_no)
-        cars = Car.get_client_cars(client)
+        cars = car.Car.get_client_cars(client)
         client.save_cars(cars)
         return client
 

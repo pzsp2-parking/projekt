@@ -1,6 +1,6 @@
 from __future__ import annotations
-from projekt.application.database.db_connector import db_cur
-from account import Client
+from application.database.db_connector import db_cur
+import application.classes.account as account
 
 
 class Car:
@@ -27,7 +27,7 @@ class Car:
         self.owner_id = owner_id
 
     @staticmethod
-    def add_car(client: Client, VIN: str, reg_no: str, model: str, brand: str, capacity: float) -> Car:
+    def add_car(client: account.Client, VIN: str, reg_no: str, model: str, brand: str, capacity: float) -> Car:
         car = Car(VIN, reg_no, model, brand, capacity, client.get_id())
         # TODO: change account_no to appropriate foreign key
         stmt_create = (
@@ -51,7 +51,7 @@ class Car:
         return car
 
     @staticmethod
-    def get_client_cars(client: Client) -> list[Car]:
+    def get_client_cars(client: account.Client) -> list[Car]:
         cars = []
         stmt = f"SELECT vin FROM car WHERE acc_no={client.get_id()};"
         db_cur.execute(stmt)
