@@ -1,6 +1,6 @@
 from __future__ import annotations
 from application.database.db_connector import db_cur
-#import psycopg2
+import psycopg2
 import application.classes.car as car
 
 
@@ -95,22 +95,22 @@ class Client(Account):
             print(e)
         return client
 
-    def add_car(self, VIN: str, nr_reg: str, model: str, brand: str, capacity: float) -> Car:
+    def add_car(self, vin: str, nr_reg: str, model: str, brand: str, capacity: float) -> car.Car:
         """
         Adds provided car and saves it to client.
         """
         try:
-            car = Car.add_car(self, VIN, nr_reg, model, brand, capacity)
-            self.cars.append(car)
+            new_car = car.Car.add_car(self, vin, nr_reg, model, brand, capacity)
+            self.cars.append(new_car)
         except Exception as e:
             print(e)
             raise
-        return car
+        return new_car
 
-    def save_cars(self, cars: list[Car]) -> None:
-        for car in cars:
-            if car not in self.cars:
-                self.cars.append(car)
+    def save_cars(self, cars: list[car.Car]) -> None:
+        for new_car in cars:
+            if new_car not in self.cars:
+                self.cars.append(new_car)
 
 
 class Employee(Account):

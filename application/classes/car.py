@@ -6,20 +6,17 @@ import application.classes.account as account
 class Car:
     """Class representing a single car"""
 
-    def __init__(self, VIN: str, reg_no: str, model: str, brand: str, capacity: float, owner_id: int):
+    def __init__(self, vin: str, reg_no: str, model: str, brand: str, capacity: float, owner_id: int):
         """
         Args:
-            VIN:        VIN number of the car.
+            vin:        VIN number of the car.
             reg_no:     Registration number of the car.
             model:      Model of the car.
             brand:      Brand of the car.
             capacity:   Maximum capacity of car's tank.
             owner_id:   ID of the owner client.
-
-        Returns:
-            A new car instance?
         """
-        self.VIN = VIN
+        self.vin = vin
         self.reg_no = reg_no
         self.model = model
         self.brand = brand
@@ -27,12 +24,12 @@ class Car:
         self.owner_id = owner_id
 
     @staticmethod
-    def add_car(client: account.Client, VIN: str, reg_no: str, model: str, brand: str, capacity: float) -> Car:
-        car = Car(VIN, reg_no, model, brand, capacity, client.get_id())
+    def add_car(client: account.Client, vin: str, reg_no: str, model: str, brand: str, capacity: float) -> Car:
+        car = Car(vin, reg_no, model, brand, capacity, client.get_id())
         # TODO: change account_no to appropriate foreign key
         stmt_create = (
             f"INSERT INTO cars (vin, registration_no, model, brand, capacity, account_no)"
-            f"VALUES (\'{car.VIN}\', \'{car.reg_no}\', \'{car.model}\', \'{car.brand}\',"
+            f"VALUES (\'{car.vin}\', \'{car.reg_no}\', \'{car.model}\', \'{car.brand}\',"
             f" \'{car.capacity}\', \'{car.owner_id}\');"
         )
         try:
@@ -43,11 +40,11 @@ class Car:
         return car
 
     @staticmethod
-    def get_car(VIN: str) -> Car:
-        stmt_cars = f"SELECT registration_no, model, brand, capacity, account_no FROM car WHERE vin=\'{VIN}\'"
+    def get_car(vin: str) -> Car:
+        stmt_cars = f"SELECT registration_no, model, brand, capacity, account_no FROM car WHERE vin=\'{vin}\'"
         db_cur.execute(stmt_cars)
         reg_no, model, brand, capacity, acc_no = db_cur.fetchone()
-        car = Car(VIN, reg_no, model, brand, capacity, acc_no)
+        car = Car(vin, reg_no, model, brand, capacity, acc_no)
         return car
 
     @staticmethod
