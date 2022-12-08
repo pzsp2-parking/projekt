@@ -5,10 +5,19 @@ from application.classes.car import Car
 TEST_CAR1 = {
     "vin": '1234',
     "reg_no": 'WZ123',
-    'model': 'Panamera',
+    'model': 'Taycan',
     'brand': 'Porsche',
     'capacity': 100,
     'owner_id': 1
+}
+
+TEST_CAR2 = {
+    "vin": '2345',
+    "reg_no": 'WZ234',
+    'model': 'S',
+    'brand': 'Tesla',
+    'capacity': 40,
+    'owner_id': 2
 }
 
 
@@ -38,5 +47,7 @@ class TestCar(unittest.TestCase):
         self.assertEqual(new_car.owner_id, TEST_CAR1['owner_id'])
         self.assertEqual(new_car.reg_no, TEST_CAR1['reg_no'])
 
-    # @patch('application.classes.car.db_cur')
-    # def test_get_client_cars_from_db(self, patch_db_cur):
+    @patch('application.classes.car.db_cur')
+    def test_get_client_cars_from_db(self, patch_db_cur):
+        patch_db_cur.fetchall.return_value = [TEST_CAR1['vin'], TEST_CAR2['vin']]
+        self.assertEqual(1, 2)
