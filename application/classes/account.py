@@ -5,21 +5,21 @@ import application.classes.car as car
 
 
 class Account:
-    def __init__(self, username: str, password: str, mail: str, phone_nr: str):
+    """
+    Class representing a basic account
+    """
+    def __init__(self, username: str, password: str, mail: str, phone_no: str):
         """
         Args:
             username:   Unique username for the client account.
             password:   Account's password.
             mail:       Mail associated with the account.
-            phone_nr:   Phone number to the client account.
-
-        Returns:
-            
+            phone_no:   Phone number to the client account.
         """
         self.username = username
         self._password = password
         self.mail = mail
-        self.phone_nr = phone_nr
+        self.phone_no = phone_no
 
     def check_password(self, pwd: str) -> bool:
         """
@@ -42,7 +42,7 @@ class Account:
         Returns:
             Account's primary key from database.
         """
-        stmt = f"SELECT acc_account_nr FROM account WHERE acc_name=\'{self.username}\';"
+        stmt = f"SELECT acc_account_no FROM accounts WHERE acc_name=\'{self.username}\';"
         try:
             db_cur.execute(stmt)
             id = db_cur.fetchone()
@@ -52,13 +52,31 @@ class Account:
 
 
 class Client(Account):
-    def __init__(self, username: str, password: str, mail: str, phone_nr: str, cars: list = []):
-        super().__init__(username, password, mail, phone_nr)
+    """
+    Class representing a client's account
+    """
+    def __init__(self, username: str, password: str, mail: str, phone_no: str, cars: list = []):
+        """
+        Args:
+            username, password, mail, phone_no: as in Account
+            cars: list of cars added to the client's account
+        """
+        super().__init__(username, password, mail, phone_no)
         self.cars = cars
 
     @staticmethod
     def get_client(username: str) -> Client:
-        stmt_client = f"SELECT acc_password, acc_mail_address, acc_phone_no FROM account WHERE username=\'{username}\';"
+        """
+        Fetching client information from database using unique username.
+
+        Args:
+            username:        Client's username.
+
+        Returns:
+            A new Client object.
+        """
+        stmt_client = (f"SELECT acc_password, acc_mail_address, acc_phone_no "
+                       f"FROM accounts WHERE acc_name=\'{username}\';")
         db_cur.execute(stmt_client)
         pwd, mail, phone_no = db_cur.fetchone()
         client = Client(username, pwd, mail, phone_no)
@@ -67,7 +85,7 @@ class Client(Account):
         return client
 
     @staticmethod
-    def add_client(username: str, password: str, mail: str, phone_nr: str) -> Client:
+    def add_client(username: str, password: str, mail: str, phone_no: str) -> Client:
         """
         Adds a new client to the database
 
@@ -75,18 +93,18 @@ class Client(Account):
             username:   Unique username for the client account.
             password:   Account's password.
             mail:       Mail associated with the account.
-            phone_nr:   Phone number to the client account.
+            phone_no:   Phone number to the client account.
 
         Returns:
-            A new client.
+            A new Client instance.
 
         Raises:
             UniqueViolation.
         """
-        client = Client(username, password, mail, phone_nr)
+        client = Client(username, password, mail, phone_no)
         stmt_create = (
-            f"INSERT INTO account (username, password, mail, phone_nr)"
-            f"VALUES (\'{client.username}\', \'{client._password}\', \'{client.mail}\', \'{client.phone_nr}\');"
+            f"INSERT INTO accounts (acc_name, acc_password, acc_email_address, acc_phone_no)"
+            f"VALUES (\'{client.username}\', \'{client._password}\', \'{client.mail}\', \'{client.phone_no}\');"
         )
         try:
             db_cur.execute(stmt_create)
@@ -95,12 +113,22 @@ class Client(Account):
             print(e)
         return client
 
-    def add_car(self, vin: str, nr_reg: str, model: str, brand: str, capacity: float) -> car.Car:
+    def add_car(self, vin: str, reg_no: str, model: str, brand: str, capacity: float) -> car.Car:
         """
         Adds provided car and saves it to client.
+
+        Args:
+            vin:        Car's VIN number.
+            reg_no:     Registration number of the car.
+            model:      Model of the car.
+            brand:      Brand of the car.
+            capacity:   Maximum capacity of car's tank.
+
+        Returns:
+            A new Car object.
         """
         try:
-            new_car = car.Car.add_car(self, vin, nr_reg, model, brand, capacity)
+            new_car = car.Car.add_car(self, vin, reg_no, model, brand, capacity)
             self.cars.append(new_car)
         except Exception as e:
             print(e)
@@ -108,12 +136,30 @@ class Client(Account):
         return new_car
 
     def save_cars(self, cars: list[car.Car]) -> None:
+        """
+        Saves provided list of cars to client's instance.
+        Only new cars are being added (repetitions are omitted).
+
+        Args:
+            cars:       List of cars to ba added to client's account.
+
+        Returns:
+            None.
+        """
         for new_car in cars:
             if new_car not in self.cars:
                 self.cars.append(new_car)
 
 
 class Employee(Account):
-    def __init__(self, username, password, mail, phone_nr, parking):
-        super().__init__(username, password, mail, phone_nr)
+    """
+    Class representing an employee's account.
+    """
+    def __init__(self, username, password, mail, phone_no, parking):
+        """
+        Args:
+            username, password, mail, phone_no: as in Account
+            parking:        Parking where employee works
+        """
+        super().__init__(username, password, mail, phone_no)
         self.parking = parking
