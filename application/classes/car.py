@@ -85,7 +85,7 @@ class Car:
         cars = []
         stmt = f"SELECT vin FROM cars WHERE acc_account_no={client.get_id()};"
         db_cur.execute(stmt)
-        vin_list = [vin for vin in db_cur.fetchall()]
+        vin_list = [[vin] for vin in db_cur.fetchall()]
         for vin in vin_list:
             cars.append(Car.get_car(vin))
         return cars

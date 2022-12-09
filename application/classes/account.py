@@ -147,9 +147,8 @@ class Client(Account):
             None.
         """
         for new_car in cars:
-            if new_car not in self.cars:
+            if new_car.vin not in ([x.vin for x in self.cars]):
                 self.cars.append(new_car)
-
 
 class Employee(Account):
     """

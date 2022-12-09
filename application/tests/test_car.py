@@ -47,7 +47,13 @@ class TestCar(unittest.TestCase):
         self.assertEqual(new_car.owner_id, TEST_CAR1['owner_id'])
         self.assertEqual(new_car.reg_no, TEST_CAR1['reg_no'])
 
+    @patch('application.classes.car.Car.get_car')
     @patch('application.classes.car.db_cur')
-    def test_get_client_cars_from_db(self, patch_db_cur):
-        patch_db_cur.fetchall.return_value = [TEST_CAR1['vin'], TEST_CAR2['vin']]
-        self.assertEqual(1, 2)
+    def test_get_client_cars_from_db(self, patch_db_cur, patch_get_car):
+        patch_db_cur.fetchall.return_value = [TEST_CAR1['vin']]
+        patch_get_car.return_value = Car(**TEST_CAR1)
+        mock_client = Mock()
+        mock_client.get_id.return_value = TEST_CAR1['owner_id']
+        cars = Car.get_client_cars(mock_client)
+        self.assertEqual(cars[0].vin, TEST_CAR1['vin'])
+        self.assertEqual(cars[0].brand, TEST_CAR1['brand'])
