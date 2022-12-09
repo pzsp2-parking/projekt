@@ -1,4 +1,5 @@
 import json
+import random
 from flask import Flask, request, jsonify
 from datetime import datetime, timedelta, timezone
 from flask_jwt_extended import create_access_token, get_jwt, \
@@ -7,6 +8,7 @@ from flask_jwt_extended import create_access_token, get_jwt, \
 
 
 from classes.account import Client
+from classes.car import Car
 
 app = Flask(__name__)
 
@@ -67,6 +69,23 @@ def create_account():
     return response
 
 
+@app.route('/api/addCar', methods=["POST"])
+@jwt_required()
+def add_car():
+    vin = request.json.get("vin", None)
+    reg_no = request.json.get("reg_no", None)
+    model = request.json.get("model", None)
+    brand = request.json.get("brand", None)
+    capacity = request.json.get("capacity", None)
+
+    username = get_jwt_identity()
+    cli = Client.get_client(username)
+
+    car = Car.add_car(cli, vin, reg_no, model, brand, capacity)
+
+    return {'reg_no': car.reg_no}
+
+
 @app.route("/api/logout", methods=["POST"])
 def logout():
     response = jsonify({"msg": "logout successful"})
@@ -74,11 +93,17 @@ def logout():
     return response
 
 
-@app.route('/api/example_client')
+@app.route('/api/client_data')
 @jwt_required()
-def get_example_client():
-    my_client = Client.get_client('client')
+def get_client_data():
+    username = get_jwt_identity()
+    cli = Client.get_client(username)
     return {
-        'username': my_client.username,
-        'cars': my_client.cars
+        'username': cli.username,
+        'cars': [{
+            'reg_no': car.reg_no,
+            'model': car.model,
+            'brand': car.brand,
+            'parked': random.random() > 0.5  # TODO: Return if car is parked
+            } for car in cli.cars]
         }
