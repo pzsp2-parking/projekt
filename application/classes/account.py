@@ -56,14 +56,17 @@ class Client(Account):
     """
     Class representing a client's account
     """
-    def __init__(self, username: str, password: str, mail: str, phone_no: str, cars: list = []):
+    def __init__(self, username: str, password: str, mail: str, phone_no: str, cars: list = 0):
         """
         Args:
             username, password, mail, phone_no: as in Account
             cars: list of cars added to the client's account
         """
         super().__init__(username, password, mail, phone_no)
-        self.cars = cars
+        if not cars:
+            self.cars = []
+        else:
+            self.cars = cars
 
     @staticmethod
     def get_client(username: str) -> Client:

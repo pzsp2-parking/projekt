@@ -1,4 +1,5 @@
 import json
+import random
 from flask import Flask, request, jsonify
 from datetime import datetime, timedelta, timezone
 from flask_jwt_extended import create_access_token, get_jwt, \
@@ -74,11 +75,17 @@ def logout():
     return response
 
 
-@app.route('/api/example_client')
+@app.route('/api/client_data')
 @jwt_required()
-def get_example_client():
-    my_client = Client.get_client('client')
+def get_client_data():
+    username = get_jwt_identity()
+    my_client = Client.get_client(username)
     return {
         'username': my_client.username,
-        'cars': [car.reg_no for car in my_client.cars]
+        'cars': [{
+            'reg_no': car.reg_no,
+            'model': car.model,
+            'brand': car.brand,
+            'parked': random.random() > 0.5  # TODO: Return if car is parked
+            } for car in my_client.cars]
         }
