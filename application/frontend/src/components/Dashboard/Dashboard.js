@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 
 import './Dashboard.css';
@@ -53,7 +54,14 @@ const CarTable = (props) => {
 }
 
 export default function Dashboard(props) {
+
+  const navigate = useNavigate();
+
   const [clientData, setClientData] = useState(null)
+
+  function addCar(event) {
+    navigate("/addCar");
+  }
 
   useEffect(() => {
     axios({
@@ -87,6 +95,7 @@ export default function Dashboard(props) {
           <CarTable cars={clientData.cars} />
         </div>
       }
+      <button type="button" class="btn btn-success" onClick={addCar}>Add car</button>
     </div>
   );
 }

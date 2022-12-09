@@ -29,7 +29,7 @@ function NewAccount(props) {
     })
     .then((response) => {
       props.setToken(response.data.access_token)
-      navigate("/dashboard");
+      navigate("/addCar");
     }).catch((error) => {
       if (error.response) {
         console.log(error.response)
@@ -103,8 +103,6 @@ function NewAccount(props) {
           <button type="button" class="btn btn-success" onClick={createNewAcc}>Submit</button>
           <button type="button" class="btn btn-danger" onClick={cancel}>Cancel</button>
         </p>
-
-        {/* <p><button type="button" class="btn btn-link" onClick={createAcc}>New account</button></p> */}
       </form>
     </div>
   );

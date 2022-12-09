@@ -5,6 +5,7 @@ import './App.css';
 import Login from './components/Login/Login';
 import NewAccount from './components/NewAccount/NewAccount'
 import Dashboard from './components/Dashboard/Dashboard';
+import AddCar from './components/AddCar';
 import Header from './components/Header';
 import useToken from './components/useToken';
 
@@ -27,6 +28,7 @@ function App() {
           <>
             <Routes>
               <Route exact path="/dashboard" element={<div><Header token={removeToken}/><Dashboard token={token} setToken={setToken}/></div>}></Route>
+              <Route exact path="/addCar" element={<div><Header token={removeToken}/><AddCar token={token} setToken={setToken}/></div>}></Route>
             </Routes>
           </>
         )}
