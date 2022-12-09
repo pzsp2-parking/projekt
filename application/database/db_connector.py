@@ -40,7 +40,7 @@ class DBConn(metaclass=SingletonMeta):
     def get_cur(self):
         return self.db_cur
 
-    def execute(self, path):
+    def execute_file(self, path):
         stmts = []
         stmt = ""
         with open(path) as fp:
@@ -58,7 +58,12 @@ class DBConn(metaclass=SingletonMeta):
             self.db_cur.execute(stmt)
         self.db_connection.commit()
 
+    def exec_change(self, stmt):
+        self.db_cur.execute(stmt)
+        self.db_connection.commit()
 
-db_cur = DBConn().get_cur()
+
+db_conn = DBConn()
+db_cur = db_conn.get_cur()
 
 # https://refactoring.guru/design-patterns/singleton/python/example#example-1

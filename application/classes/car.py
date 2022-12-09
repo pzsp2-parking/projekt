@@ -1,5 +1,5 @@
 from __future__ import annotations
-from application.database.db_connector import db_cur
+from application.database.db_connector import db_cur, db_conn
 import application.classes.account as account
 
 
@@ -47,7 +47,7 @@ class Car:
             f" \'{car.capacity}\', \'{car.owner_id}\');"
         )
         try:
-            db_cur.execute(stmt_create)
+            db_conn.exec_change(stmt_create)
         except Exception as e:
             print(e)
             raise
@@ -85,7 +85,7 @@ class Car:
         cars = []
         stmt = f"SELECT vin FROM cars WHERE acc_account_no={client.get_id()};"
         db_cur.execute(stmt)
-        vin_list = [[vin] for vin in db_cur.fetchall()]
+        vin_list = [vin[0] for vin in db_cur.fetchall()]
         for vin in vin_list:
             cars.append(Car.get_car(vin))
         return cars

@@ -1,5 +1,6 @@
 from database.db_connector import db_cur, DBConn
 from classes.account import Client
+from classes.car import Car
 
 
 def prepare_db():
@@ -11,11 +12,17 @@ def prepare_db():
     DBConn().execute(insert_path)
 
 
-def example(username):
-    my_client = Client.get_client(username)
-    print(f"Username: {my_client.username}, cars: {my_client.cars}")
+def example(user):
+    vin='VIN1'
+    reg_no='WZ1234'
+    model='Taycan'
+    brand='Porsche'
+    capacity=100
+    my_client = Client.get_client(user)
+    Car.add_car(my_client, vin, reg_no, model, brand, capacity)
+    print(f"Username: {my_client.username}")
 
 
 if __name__ == "__main__":
     # prepare_db()
-    example("ola")
+    example("employee")

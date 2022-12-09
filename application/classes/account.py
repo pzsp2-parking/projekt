@@ -45,7 +45,7 @@ class Account:
         stmt = f"SELECT acc_account_no FROM accounts WHERE acc_name=\'{self.username}\';"
         try:
             db_cur.execute(stmt)
-            id = db_cur.fetchone()
+            id = db_cur.fetchone()[0]
         except Exception as e:
             print(e)
         return id
@@ -75,7 +75,7 @@ class Client(Account):
         Returns:
             A new Client object.
         """
-        stmt_client = (f"SELECT acc_password, acc_mail_address, acc_phone_no "
+        stmt_client = (f"SELECT acc_password, acc_email_address, acc_phone_no "
                        f"FROM accounts WHERE acc_name=\'{username}\';")
         db_cur.execute(stmt_client)
         pwd, mail, phone_no = db_cur.fetchone()
