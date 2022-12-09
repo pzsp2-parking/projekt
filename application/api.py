@@ -80,5 +80,5 @@ def get_example_client():
     my_client = Client.get_client('client')
     return {
         'username': my_client.username,
-        'cars': my_client.cars
+        'cars': [car.reg_no for car in my_client.cars]
         }
