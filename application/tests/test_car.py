@@ -29,12 +29,12 @@ class TestCar(unittest.TestCase):
         self.assertEqual(new_car.brand, TEST_CAR1['brand'])
         self.assertEqual(new_car.owner_id, TEST_CAR1['owner_id'])
 
-    @patch('application.classes.car.db_cur')
-    def test_add_car_to_db(self, patch_db_cur):
+    @patch('application.classes.car.db_conn')
+    def test_add_car_to_db(self, patch_db_conn):
         mock_client = Mock()
         mock_client.get_id.return_value = TEST_CAR1['owner_id']
         new_car = Car.add_car(mock_client, *list(TEST_CAR1.values())[:-1])
-        patch_db_cur.execute.assert_called_once()
+        patch_db_conn.exec_change.assert_called_once()
         self.assertEqual(new_car.owner_id, TEST_CAR1['owner_id'])
         self.assertEqual(new_car.reg_no, TEST_CAR1['reg_no'])
 

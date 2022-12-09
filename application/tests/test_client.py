@@ -51,10 +51,10 @@ class TestClient(unittest.TestCase):
         self.assertEqual(len(client_with_cars.cars), 1)
         self.assertEqual(client_with_cars.username, TEST_CLIENT1['username'])
 
-    @patch('application.classes.account.db_cur')
-    def test_add_client_to_db(self, patch_db_cur):
+    @patch('application.classes.account.db_conn')
+    def test_add_client_to_db(self, patch_db_conn):
         new_client = Client.add_client(*list(TEST_CLIENT1.values())[:-1])
-        patch_db_cur.execute.assert_called_once()
+        patch_db_conn.exec_change.assert_called_once()
         self.assertEqual(new_client.username, TEST_CLIENT1['username'])
         self.assertEqual(new_client.mail, TEST_CLIENT1['mail'])
 
