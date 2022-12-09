@@ -1,5 +1,5 @@
 from database.db_connector import db_cur, DBConn
-from classes.client import Client
+from classes.account import Client
 
 def prepare_db():
     """Either create database and tables using DBConn().execute(schema_path)
@@ -15,4 +15,4 @@ def example(username):
 
 if __name__=="__main__":
     #prepare_db()
-    example("ola")
+    example("client")
