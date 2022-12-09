@@ -1,8 +1,9 @@
 from __future__ import annotations
-from application.database.db_connector import db_cur
+from application.database.db_connector import db_cur, db_conn
 import psycopg2
 import application.classes.car as car
 
+CLIENT_TYPE = 'CLIENT'
 
 class Account:
     """
@@ -103,11 +104,11 @@ class Client(Account):
         """
         client = Client(username, password, mail, phone_no)
         stmt_create = (
-            f"INSERT INTO accounts (acc_name, acc_password, acc_email_address, acc_phone_no)"
-            f"VALUES (\'{client.username}\', \'{client._password}\', \'{client.mail}\', \'{client.phone_no}\');"
+            f"INSERT INTO accounts (acc_name, acc_password, acc_email_address, acc_phone_no, acc_account_type)"
+            f"VALUES (\'{client.username}\', \'{client._password}\', \'{client.mail}\', \'{client.phone_no}\', \'{CLIENT_TYPE}\');"
         )
         try:
-            db_cur.execute(stmt_create)
+            db_conn.exec_change(stmt_create)
         except psycopg2.errors.UniqueViolation as e:
             # TODO: better error handler
             print(e)
