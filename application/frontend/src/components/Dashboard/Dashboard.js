@@ -90,8 +90,6 @@ export default function Dashboard(props) {
     <div className='Dashboard'>
       {clientData &&
         <div>
-          <p>Username: {clientData.username}</p>
-          <p>Your cars:</p>
           <CarTable cars={clientData.cars} />
         </div>
       }
