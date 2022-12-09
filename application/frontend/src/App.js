@@ -27,8 +27,8 @@ function App() {
         :(
           <>
             <Routes>
-              <Route exact path="/dashboard" element={<div><Header token={removeToken}/><Dashboard token={token} setToken={setToken}/></div>}></Route>
               <Route exact path="/addCar" element={<div><Header token={removeToken}/><AddCar token={token} setToken={setToken}/></div>}></Route>
+              <Route path="*" element={<div><Header token={removeToken}/><Dashboard token={token} setToken={setToken}/></div>}></Route>
             </Routes>
           </>
         )}
