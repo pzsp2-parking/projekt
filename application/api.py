@@ -6,7 +6,7 @@ from flask_jwt_extended import create_access_token, get_jwt, \
                                jwt_required, JWTManager
 
 
-from classes.client import Client
+from classes.account import Client
 
 app = Flask(__name__)
 
@@ -38,10 +38,31 @@ def create_token():
     login = request.json.get("login", None)
     password = request.json.get("password", None)
 
-    if login != "ola" or password != "ola":
-        return {"msg": "Wrong login or password"}, 401
+    cli = Client.get_client(login)
+
+    if cli == -1:
+        return {"msg": "No account with given login"}, 401
+    elif not cli.check_password(password):
+        return {"msg": "Wrong password"}, 401
 
     access_token = create_access_token(identity=login)
+    response = {"access_token": access_token}
+    return response
+
+
+@app.route('/api/newAcc', methods=["POST"])
+def create_account():
+    username = request.json.get("username", None)
+    password = request.json.get("password", None)
+    email = request.json.get("email", None)
+    phone_nr = request.json.get("phone_nr", None)
+
+    cli = Client.add_client(username, password, email, phone_nr)
+
+    if cli == -1:
+        return {"msg": "Could not create account with given data"}, 401
+
+    access_token = create_access_token(identity=username)
     response = {"access_token": access_token}
     return response
 
@@ -56,7 +77,7 @@ def logout():
 @app.route('/api/example_client')
 @jwt_required()
 def get_example_client():
-    my_client = Client.get_client('ola')
+    my_client = Client.get_client('client')
     return {
         'username': my_client.username,
         'cars': my_client.cars

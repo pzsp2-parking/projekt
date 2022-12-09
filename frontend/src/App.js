@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
-import logo from './logo.svg';
 import './App.css';
 import Login from './components/Login/Login';
+import NewAccount from './components/NewAccount/NewAccount'
 import Dashboard from './components/Dashboard/Dashboard';
 import Header from './components/Header';
 import useToken from './components/useToken';
@@ -14,13 +14,19 @@ function App() {
   return (
     <BrowserRouter>
       <div className="App">
-        <Header token={removeToken}/>
-        {!token && token!=="" &&token!== undefined?  
-        <Login setToken={setToken} />
+        {!token && token !== "" && token !== undefined?
+        (
+          <>
+            <Routes>
+              <Route exact path="/createAcc" element={<NewAccount setToken={setToken}/>}></Route>
+              <Route path="*" element={<Login setToken={setToken}/>}></Route>
+            </Routes>
+          </>
+        )
         :(
           <>
             <Routes>
-              <Route exact path="/dashboard" element={<Dashboard token={token} setToken={setToken}/>}></Route>
+              <Route exact path="/dashboard" element={<div><Header token={removeToken}/><Dashboard token={token} setToken={setToken}/></div>}></Route>
             </Routes>
           </>
         )}

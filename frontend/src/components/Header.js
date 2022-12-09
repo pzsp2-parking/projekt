@@ -1,7 +1,9 @@
-import logo from '../logo.svg'
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function Header(props) {
+
+  const navigate = useNavigate();
 
   function logMeOut() {
     axios({
@@ -10,6 +12,7 @@ function Header(props) {
     })
     .then((response) => {
        props.token()
+       navigate("/");
     }).catch((error) => {
       if (error.response) {
         console.log(error.response)
@@ -19,12 +22,12 @@ function Header(props) {
     })}
 
     return(
-        <header className="App-header">
-            <img src={logo} className="App-logo" alt="logo" />
-            <button onClick={logMeOut}> 
-                Logout
-            </button>
-        </header>
+      <header className="App-header">
+        <img src={'./logo.png'} className="App-logo" alt="logo"/>
+        <button type="button" class="btn btn-light" style={{float: 'right',}} onClick={logMeOut}> 
+            Logout
+        </button>
+      </header>
     )
 }
 
