@@ -1,6 +1,9 @@
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent))
 import unittest
 from unittest.mock import patch, Mock
-from application.classes.car import Car
+from classes.car import Car
 
 TEST_CAR1 = {
     "vin": '1234',
@@ -29,7 +32,7 @@ class TestCar(unittest.TestCase):
         self.assertEqual(new_car.brand, TEST_CAR1['brand'])
         self.assertEqual(new_car.owner_id, TEST_CAR1['owner_id'])
 
-    @patch('application.classes.car.db_conn')
+    @patch('classes.car.db_conn')
     def test_add_car_to_db(self, patch_db_conn):
         mock_client = Mock()
         mock_client.get_id.return_value = TEST_CAR1['owner_id']
@@ -38,7 +41,7 @@ class TestCar(unittest.TestCase):
         self.assertEqual(new_car.owner_id, TEST_CAR1['owner_id'])
         self.assertEqual(new_car.reg_no, TEST_CAR1['reg_no'])
 
-    @patch('application.classes.car.db_cur')
+    @patch('classes.car.db_cur')
     def test_get_car_from_db(self, patch_db_cur):
         patch_db_cur.fetchone.return_value = list(TEST_CAR1.values())[1:]
         new_car = Car.get_car(TEST_CAR1['vin'])
@@ -47,8 +50,8 @@ class TestCar(unittest.TestCase):
         self.assertEqual(new_car.owner_id, TEST_CAR1['owner_id'])
         self.assertEqual(new_car.reg_no, TEST_CAR1['reg_no'])
 
-    @patch('application.classes.car.Car.get_car')
-    @patch('application.classes.car.db_cur')
+    @patch('classes.car.Car.get_car')
+    @patch('classes.car.db_cur')
     def test_get_client_cars_from_db(self, patch_db_cur, patch_get_car):
         patch_db_cur.fetchall.return_value = [TEST_CAR1['vin']]
         patch_get_car.return_value = Car(**TEST_CAR1)
@@ -57,3 +60,6 @@ class TestCar(unittest.TestCase):
         cars = Car.get_client_cars(mock_client)
         self.assertEqual(cars[0].vin, TEST_CAR1['vin'])
         self.assertEqual(cars[0].brand, TEST_CAR1['brand'])
+
+if __name__ == '__main__':
+    unittest.main()

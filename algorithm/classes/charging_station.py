@@ -20,7 +20,7 @@ class Charging_station:
         self.time_period = time_period
 
     def __str__(self) -> str:
-        return f"{self.carpark_id}, {self.charger_id}\n"
+        return f"carpark: {self.carpark_id}, charger: {self.charger_id}\ncar:\n{self.car}"
 
     def set_tags(self, current_time):
         """

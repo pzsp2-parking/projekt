@@ -1,7 +1,7 @@
 from __future__ import annotations
-from application.database.db_connector import db_cur, db_conn
+from database.db_connector import db_cur, db_conn
 import psycopg2
-import application.classes.car as car
+import classes.car as car
 
 CLIENT_TYPE = 'CLIENT'
 

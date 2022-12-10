@@ -1,6 +1,6 @@
 from __future__ import annotations
-from application.database.db_connector import db_cur, db_conn
-import application.classes.account as account
+from database.db_connector import db_cur, db_conn
+import classes.account as account
 
 
 class Car:

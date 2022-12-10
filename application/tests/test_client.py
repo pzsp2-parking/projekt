@@ -1,7 +1,10 @@
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent))
 import unittest
 from unittest.mock import patch, Mock
-from application.classes.account import Account, Client
-from application.classes.car import Car
+from classes.account import Account, Client
+from classes.car import Car
 
 TEST_CAR1 = {
     "vin": '1234',
@@ -41,8 +44,8 @@ class TestClient(unittest.TestCase):
         self.assertEqual(new_client.phone_no, TEST_CLIENT1['phone_no'])
         self.assertEqual(new_client.mail, TEST_CLIENT1['mail'])
 
-    @patch('application.classes.account.car.Car')
-    @patch('application.classes.account.db_cur')
+    @patch('classes.account.car.Car')
+    @patch('classes.account.db_cur')
     def test_get_client_from_db(self, patch_db_cur, patch_car):
         patch_db_cur.fetchone.return_value = list(TEST_CLIENT1.values())[1:-1]
         patch_car.get_client_cars.return_value = [Car(**TEST_CAR1)]
@@ -51,14 +54,14 @@ class TestClient(unittest.TestCase):
         self.assertEqual(len(client_with_cars.cars), 1)
         self.assertEqual(client_with_cars.username, TEST_CLIENT1['username'])
 
-    @patch('application.classes.account.db_conn')
+    @patch('classes.account.db_conn')
     def test_add_client_to_db(self, patch_db_conn):
         new_client = Client.add_client(*list(TEST_CLIENT1.values())[:-1])
         patch_db_conn.exec_change.assert_called_once()
         self.assertEqual(new_client.username, TEST_CLIENT1['username'])
         self.assertEqual(new_client.mail, TEST_CLIENT1['mail'])
 
-    @patch('application.classes.account.car.Car')
+    @patch('classes.account.car.Car')
     def test_add_client_car(self, patch_car):
         client = Client(**TEST_CLIENT1)
         patch_car.add_car.return_value = Car(**TEST_CAR1)
@@ -83,3 +86,6 @@ class TestClient(unittest.TestCase):
         self.assertEqual(len(client.cars), 2)
         self.assertEqual(client.cars[0].reg_no, TEST_CAR1['reg_no'])
         self.assertEqual(client.cars[1].reg_no, TEST_CAR2['reg_no'])
+
+if __name__ == '__main__':
+    unittest.main()
