@@ -6,7 +6,7 @@ class Carpark:
         Args:
             id:     Parking id.
         """
-        self.parking_id = id
+        self.id = id
         self.active_charging_stations = []
         self.current_time = None
         self.max_energy_usage = 0
@@ -25,7 +25,7 @@ class Carpark:
         Actualizes time and active charging stations.
         """
         self.active_charging_stations.clear()
-        self.active_charging_stations = Char_stat_from_db_creator.get_charging_stations(self.parking_id)
+        self.active_charging_stations = Char_stat_from_db_creator.get_charging_stations(self.id)
         self.current_time = Char_stat_from_db_creator.get_curr_time()
         self.calculate_max_energy_use()
 
