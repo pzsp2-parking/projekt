@@ -1,5 +1,6 @@
 from classes.charging_car import Charging_car
 from decimal import Decimal
+import datetime
 
 class Charging_station:
     def __init__(self, car:Charging_car, charger_id, carpark_id, time_period=Decimal(0.25)):
@@ -31,10 +32,17 @@ class Charging_station:
             current_time:      Current time.
         """
         # I do not know how datetime sql type will be handled in python so I will keep it abstract
-        if self.car.pickup_time - current_time:
+        self.set_below_start()
+        self.set_hour_to_go(current_time)
+
+    def set_hour_to_go(self, current_time):
+        if self.car.pickup_time - current_time <= datetime.timedelta(hours=1):
             self.hour_to_go = True
-        if self.car.charge_level * self.car.car_capacity - self.car.charger_power * self.time_period < self.car.start_charge_level * self.car.car_capacity:
+
+    def set_below_start(self):
+        if self.car.charge_level * self.car.car_capacity / 100 - self.car.charger_power * self.time_period < self.car.start_charge_level * self.car.car_capacity / 100:
             self.below_start = True
+
 
     def set_status(self):
         """
@@ -57,7 +65,7 @@ class Charging_station:
         Returns:
             Energy usage.
         """
-        return self.order * self.car.charger_power * self.time_period
+        return Decimal(self.order) * self.car.charger_power * self.time_period
     
     def max_energy_usage(self):
         """
@@ -75,8 +83,10 @@ class Charging_station:
             order:  Power on with charging power should now operate.
         """
         if self.hour_to_go:
-            self.order = max(1, order)      # or 0.5?
+            self.order = max(0.5, order)      # or 0.5?
         elif self.below_start:
-            self.order = max(0.5, order)    # or 0?
+            self.order = max(0, order)    # or 0?
         else:
             self.order = order
+
+
