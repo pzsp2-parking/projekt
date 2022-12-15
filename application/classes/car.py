@@ -1,6 +1,7 @@
 from __future__ import annotations
 from database.db_connector import db_cur, db_conn
 import classes.account as account
+import datetime
 
 
 class Car:
@@ -89,3 +90,35 @@ class Car:
         for vin in vin_list:
             cars.append(Car.get_car(vin))
         return cars
+
+    def is_parked(self) -> bool:
+        """
+        TODO: test and finish
+        Checks if given car is parked or not.
+
+        Returns:
+            True:   If car is parked.
+            False:  If car is not parked.
+        """
+        stmt = f"SELECT * FROM WHERE vin={self.vin}"
+        db_cur.execute(stmt)
+        if db_cur.fetchall():
+            return True
+        else:
+            return False
+
+    def park(self, client_id) -> None:
+        """
+        TODO: finish and test
+        Parks a car updating information in the database.
+        """
+
+        stmt = f"INSERT INTO WHERE reg_no={self.reg_no}"
+
+    def unpark(self) -> None:
+        """
+        TODO: finish and test
+        Unparks a car updating information in the database.
+        """
+        
+

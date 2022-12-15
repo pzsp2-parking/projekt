@@ -154,6 +154,38 @@ class Client(Account):
             if new_car.vin not in ([x.vin for x in self.cars]):
                 self.cars.append(new_car)
 
+    def park_car(self, reg_no) -> None:
+        """
+        TODO: test and finish, VIN or registry number?
+        Enables client to park a given car.
+
+        Args:
+            vin:        Car's VIN number to be parked.
+
+        Returns:
+            None
+        """
+        if not reg_no in [x.reg_no for x in self.cars]:
+            #is it possible to choose not owned car?
+            raise Exception
+        car = [x for x in self.cars if x.reg_no==reg_no][0]
+        car.park()
+
+    def unpark_car(self, vin) -> None:
+        """
+        TODO: test and finish, VIN or registry number?
+        Enables client to unpark a given car.
+
+        Args:
+            vin:        Car's VIN number to be parked.
+
+        Returns:
+            None
+        """
+        car = [x for x in self.cars if x.reg_no==reg_no][0]
+        car.unpark()
+
+
 class Employee(Account):
     """
     Class representing an employee's account.
