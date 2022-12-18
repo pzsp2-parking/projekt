@@ -20,11 +20,11 @@ def main():
     b = Balancer()
     cp = Carpark(1)
 
-    cp.charge()
     while True:
         demand = op.createDemand()
         cp.actualize()
         usage = b.balance(cp, demand)
+        cp.charge()
         To_database.insert_new_charging(cp.active_charging_stations)
         To_database.insert_requests(demand, usage, 1)
         e_usg.set(usage)
