@@ -10,8 +10,8 @@ class Char_stat_from_db_creator():
         db_cur.execute(stmt)
         char_stat_vals = [car_charg for car_charg in db_cur.fetchall()]
         for char_stat_val in char_stat_vals:
-            charge_level, base_charge_level, datetime, departure_datetime, capacity, maximal_power, charger_type, charger_id, car_park_id = char_stat_val 
-            car = Charging_car(charge_level, base_charge_level,  departure_datetime, capacity, charger_type, maximal_power) 
+            charge_level, base_charge_level, datetime, departure_datetime, capacity, maximal_power, charger_type, charger_id, car_park_id, car_vin = char_stat_val 
+            car = Charging_car(charge_level, base_charge_level,  departure_datetime, capacity, charger_type, maximal_power, car_vin) 
             charging_station = Charging_station(car, charger_id, car_park_id)
             charging_stations.append(charging_station)
         return charging_stations

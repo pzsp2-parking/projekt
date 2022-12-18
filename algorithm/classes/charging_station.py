@@ -36,7 +36,8 @@ class Charging_station:
         self.set_hour_to_go(current_time)
 
     def set_hour_to_go(self, current_time):
-        if self.car.pickup_time - current_time <= datetime.timedelta(hours=1):
+        time_to_go =self.car.pickup_time - current_time  
+        if time_to_go <= datetime.timedelta(hours=1)and time_to_go >= datetime.timedelta():
             self.hour_to_go = True
 
     def set_below_start(self):
