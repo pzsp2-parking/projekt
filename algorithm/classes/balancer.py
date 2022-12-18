@@ -1,7 +1,7 @@
 from classes.carpark import Carpark
+from decimal import Decimal
 
 class Balancer:
-    @staticmethod
     def balance(self, carpark:Carpark, energy_usage_demand):
         """
         Sets chargers' power to satisfy energy usage demand.
@@ -16,20 +16,20 @@ class Balancer:
         usage = 0
         carpark.grade_cars()
         carpark.sort_cars()
+        energy_usage_demand = Decimal(energy_usage_demand)
         if energy_usage_demand > carpark.max_energy_usage:
             usage = self._balance_case(carpark, energy_usage_demand, (1,))
-        elif energy_usage_demand > 0.5 * carpark.max_energy_usage:
+        elif energy_usage_demand > Decimal(0.5) * carpark.max_energy_usage:
             usage = self._balance_case(carpark, energy_usage_demand, (1, 0.5, 0, 1))
         elif energy_usage_demand > 0:
             usage = self._balance_case(carpark, energy_usage_demand, (0.5, 0, -1))
-        elif energy_usage_demand > -1 * carpark.max_energy_usage:
+        elif energy_usage_demand > Decimal(-1) * carpark.max_energy_usage:
             usage = self._balance_case(carpark, energy_usage_demand, (0, -1))
         else:
-            usage = self._balance_case(carpark, energy_usage_demand, (-1))
+            usage = self._balance_case(carpark, energy_usage_demand, (-1,))
         return usage
     
-    @staticmethod
-    def _set_orders(self, carpark:Carpark, energy_usage_demand, usage, order_to_balance, margin=0.1):
+    def _set_orders(self, carpark:Carpark, energy_usage_demand, usage, order_to_balance, margin=Decimal(0.1)):
         """
         Sets sets stations' orders by one, to new value (respecting constraints) untill energy usage demand is met or untill it runs out of stations.
         
@@ -43,7 +43,8 @@ class Balancer:
         Returns:
             Approximate energy to be used by given carpark.
         """
-        sign = -1 if energy_usage_demand < 0 else 1
+        # sign = -1 if energy_usage_demand < 0 else 1
+        sign = 1
         demand_met = False
         for station in carpark.active_charging_stations:
             if usage < energy_usage_demand * (1 + sign * margin):       # we start with usage bigger than expected so we end balancing when usage is smaller than expected usage + margin
@@ -53,7 +54,6 @@ class Balancer:
             usage = carpark.calculate_real_energy_use()
         return usage, demand_met
 
-    @staticmethod
     def _balance_case(self, carpark:Carpark, energy_usage_demand, orders_to_balance:tuple):
         """
         Calls _set_orders several times with diffrent orders untill energy usage demand is satisfied or we run out od orders.

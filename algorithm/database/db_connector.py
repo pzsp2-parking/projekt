@@ -1,6 +1,7 @@
 from threading import Lock
 import psycopg2
 
+
 class SingletonMeta(type):
     """
     Thread-safe implementation of Singleton.
@@ -8,7 +9,6 @@ class SingletonMeta(type):
 
     _instances = {}
     _lock: Lock = Lock()
-
 
     def __call__(cls, *args, **kwargs):
         """
@@ -24,23 +24,23 @@ class SingletonMeta(type):
 
 class DBConn(metaclass=SingletonMeta):
     host: str = "localhost"
-    user="pzsp2"
-    password="parking"
-    database="parpa"
+    user = "pzsp2"
+    password = "parking"
+    database = "parpa"
 
     def __init__(self):
-        self.db_connection=psycopg2.connect(
+        self.db_connection = psycopg2.connect(
             host=self.host,
             user=self.user,
             password=self.password,
             database=self.database
-            )
+        )
         self.db_cur = self.db_connection.cursor()
-    
+
     def get_cur(self):
         return self.db_cur
 
-    def execute(self, path):
+    def execute_file(self, path):
         stmts = []
         stmt = ""
         with open(path) as fp:
@@ -48,18 +48,22 @@ class DBConn(metaclass=SingletonMeta):
                 line = line.replace('\n', '')
                 if not line:
                     continue
-                if line[-1]==';':
-                    stmt+=line
+                if line[-1] == ';':
+                    stmt += line
                     stmts.append(stmt)
-                    stmt=""
+                    stmt = ""
                     continue
-                stmt+=line
+                stmt += line
         for stmt in stmts:
             self.db_cur.execute(stmt)
         self.db_connection.commit()
 
+    def exec(self, stmt):
+        self.db_cur.execute(stmt)
+        self.db_connection.commit()
 
-db_cur=DBConn().get_cur()
 
+db_conn = DBConn()
+db_cur = db_conn.get_cur()
 
 # https://refactoring.guru/design-patterns/singleton/python/example#example-1

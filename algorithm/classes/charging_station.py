@@ -19,9 +19,10 @@ class Charging_station:
         self.hour_to_go = False     #hour or less remained from pickup
         self.status = 0             #bigger status results in car more likely being charged
         self.time_period = time_period
+        self.new_charge_level = 0
 
     def __str__(self) -> str:
-        return f"carpark: {self.carpark_id}, charger: {self.charger_id}\ncar:\n{self.car}"
+        return f"carpark: {self.carpark_id}, charger: {self.charger_id}\ncar:\n{self.car}\n\n\torder: {self.order}\n\tnew charge level: {self.new_charge_level}"
 
     def set_tags(self, current_time):
         """
@@ -43,6 +44,10 @@ class Charging_station:
     def set_below_start(self):
         if self.car.charge_level * self.car.car_capacity / 100 - self.car.charger_power * self.time_period < self.car.start_charge_level * self.car.car_capacity / 100:
             self.below_start = True
+
+    def charge(self):
+        new = (self.car.charge_level * self.car.car_capacity /100 + Decimal(self.order) *self.car.charger_power * self.time_period) /self.car.car_capacity*100
+        self.new_charge_level = min(new, 100)
 
 
     def set_status(self):
