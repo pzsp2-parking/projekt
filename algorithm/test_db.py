@@ -14,8 +14,8 @@ def example():
     cp.actualize()
     usage = b.balance(cp, demand)
     cp.charge()
-    To_database.insert_new_charging(cp.active_charging_stations)
-    To_database.insert_requests(demand, usage, 1)
+    # To_database.insert_new_charging(cp.active_charging_stations)
+    # To_database.insert_requests(demand, usage, 1)
     print(cp)
     print("Demand", demand)
     print("Usage:", usage)
@@ -23,3 +23,4 @@ def example():
 
 if __name__=="__main__":
     example()
+
