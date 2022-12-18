@@ -23,7 +23,6 @@ class Carpark:
     def charge(self):
         for station in self.active_charging_stations:
             station.charge()
-            Char_stat_from_db_creator.insert_new_charging(station)
 
     def actualize(self, time_period = Decimal(0.25)):
         """

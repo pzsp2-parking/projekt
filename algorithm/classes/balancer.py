@@ -2,6 +2,8 @@ from classes.carpark import Carpark
 from decimal import Decimal
 
 class Balancer:
+    usage = 0
+
     def balance(self, carpark:Carpark, energy_usage_demand):
         """
         Sets chargers' power to satisfy energy usage demand.
@@ -27,6 +29,7 @@ class Balancer:
             usage = self._balance_case(carpark, energy_usage_demand, (0, -1))
         else:
             usage = self._balance_case(carpark, energy_usage_demand, (-1,))
+        self.usage = usage
         return usage
     
     def _set_orders(self, carpark:Carpark, energy_usage_demand, usage, order_to_balance, margin=Decimal(0.1)):
