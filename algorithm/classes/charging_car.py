@@ -8,6 +8,7 @@ class Charging_car:
             car_capacity:           Car battery capacity.
             charger_type:           AC or DC.
             charger_power:          Max power of the charger.
+            car_vin:                Car VIN number.
         """
         self.charge_level = charge_level
         self.start_charge_level = start_charge_level

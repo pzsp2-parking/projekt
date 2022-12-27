@@ -21,6 +21,9 @@ class Carpark:
         return stations
 
     def charge(self):
+        """
+        Sets new battery level of all cars at the carpark (in full project this would be sensed by real charging stations).
+        """
         for station in self.active_charging_stations:
             station.charge()
 
