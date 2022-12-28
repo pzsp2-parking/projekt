@@ -101,7 +101,7 @@ class Car:
             True:   If car is parked.
             False:  If car is not parked.
         """
-        stmt = f"SELECT * FROM cars_charging WHERE vin=\'{self.vin}\'"
+        stmt = f"SELECT * FROM cars_charging WHERE vin='{self.vin}'"
         db_cur.execute(stmt)
         if db_cur.fetchall():
             return True
@@ -130,8 +130,8 @@ class Car:
 
         stmt_insert = (
             f"INSERT INTO charging (datetime, base_charge_level, charge_level, departure_dateime, cha_charger_id, car_vin)"
-            f"VALUES (\'{time}\', \'{charge_level}\', \'{charge_level}\', \'{departure_time}\',"
-            f" \'{charger_id}\', \'{self.vin}\');"
+            f"VALUES ('{time}', '{charge_level}', '{charge_level}', '{departure_time}',"
+            f" '{charger_id}', '{self.vin}');"
         )
 
         db_conn.exec_change(stmt_insert)

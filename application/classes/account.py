@@ -2,6 +2,7 @@ from __future__ import annotations
 from database.db_connector import db_cur, db_conn
 import psycopg2
 import classes.car as car
+import datetime
 
 CLIENT_TYPE = 'CLIENT'
 
@@ -154,26 +155,29 @@ class Client(Account):
             if new_car.vin not in ([x.vin for x in self.cars]):
                 self.cars.append(new_car)
 
-    def park_car(self, reg_no) -> None:
+    def park_car(self, vin: str, charge_level: float, charger_id: int, departure_time: datetime = None) -> None:
         """
-        TODO: test and finish, VIN or registry number?
+        TODO: add tests
         Enables client to park a given car.
 
         Args:
-            vin:        Car's VIN number to be parked.
+            vin:              Car's VIN number to be parked.
+            charge_level:     Energy level of the parking car.
+            charger_id:       Id of the used charger.
+            departure_time:   Estimated departure time.
 
         Returns:
             None
         """
-        if not reg_no in [x.reg_no for x in self.cars]:
-            #is it possible to choose not owned car?
+        if not vin in [x.vin for x in self.cars]:
+            #TODO: is it possible to choose not owned car or frontend does not allow?
             raise Exception
-        car = [x for x in self.cars if x.reg_no==reg_no][0]
-        car.park()
+        car = [x for x in self.cars if x.vin==vin][0]
+        car.park(charge_level, charger_id, departure_time)
 
     def unpark_car(self, vin) -> None:
         """
-        TODO: test and finish, VIN or registry number?
+        TODO: add tests
         Enables client to unpark a given car.
 
         Args:
@@ -182,7 +186,7 @@ class Client(Account):
         Returns:
             None
         """
-        car = [x for x in self.cars if x.reg_no==reg_no][0]
+        car = [x for x in self.cars if x.vin==vin][0]
         car.unpark()
 
 
