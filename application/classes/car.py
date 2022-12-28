@@ -1,8 +1,9 @@
 from __future__ import annotations
 from database.db_connector import db_cur, db_conn
 import classes.account as account
-import datetime
+from datetime import datetime, timedelta
 
+DEPARTURE_HOURS=8
 
 class Car:
     """Class representing a single car"""
@@ -93,32 +94,77 @@ class Car:
 
     def is_parked(self) -> bool:
         """
-        TODO: test and finish
+        TODO: write tests
         Checks if given car is parked or not.
 
         Returns:
             True:   If car is parked.
             False:  If car is not parked.
         """
-        stmt = f"SELECT * FROM WHERE vin={self.vin}"
+        stmt = f"SELECT * FROM cars_charging WHERE vin=\'{self.vin}\'"
         db_cur.execute(stmt)
         if db_cur.fetchall():
             return True
         else:
             return False
 
-    def park(self, client_id) -> None:
+    def park(self, charge_level: float, charger_id: int, departure_time: datetime = None) -> None:
         """
-        TODO: finish and test
+        TODO: add tests
         Parks a car updating information in the database.
-        """
 
-        stmt = f"INSERT INTO WHERE reg_no={self.reg_no}"
+        Args:
+            charge_level:     Energy level of the parking car.
+            charger_id:       Id of the used charger.
+            departure_time:   Estimated departure time.
+
+        Raises:
+            Exception:        When chosen car is already parked.
+        """
+        if self.is_parked():
+            raise Exception ("Car is already parked")
+        
+        time=datetime.now()
+        if not departure_time:
+            departure_time=time+timedelta(hours=DEPARTURE_HOURS)
+
+        stmt_insert = (
+            f"INSERT INTO charging (datetime, base_charge_level, charge_level, departure_dateime, cha_charger_id, car_vin)"
+            f"VALUES (\'{time}\', \'{charge_level}\', \'{charge_level}\', \'{departure_time}\',"
+            f" \'{charger_id}\', \'{self.vin}\');"
+        )
+
+        db_conn.exec_change(stmt_insert)
 
     def unpark(self) -> None:
         """
-        TODO: finish and test
+        TODO: add tests
+
         Unparks a car updating information in the database.
+
+        Raises:
+            Exception:        When chosen car is not parked.
         """
+        if not self.is_parked():
+            raise Exception ("Car is not parked")
+        
+        stmt = f"select charge_level, cha_charger_id from charging where car_vin='{self.vin}' ORDER BY datetime DESC;"
+
+        db_cur.execute(stmt)
+        charge_level, charger_id=db_cur.fetchone()
+
+        time=datetime.now()
+
+        stmt = f"UPDATE charging SET departure_dateime = '{time}' WHERE car_vin='{self.vin}' AND departure_dateime<now();"
+        db_conn.exec_change(stmt)
+
+        stmt_insert = (
+            f"INSERT INTO charging (datetime, base_charge_level, charge_level, departure_dateime, cha_charger_id, car_vin)"
+            f"VALUES ('{time}', '{charge_level}', '{charge_level}', '{time}',"
+            f" '{charger_id}', '{self.vin}');"
+        )
+
+        db_conn.exec_change(stmt_insert)
 
 
+        
