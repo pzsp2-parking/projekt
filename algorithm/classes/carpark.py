@@ -1,4 +1,5 @@
 from database.char_stat_from_db_creator import Char_stat_from_db_creator
+from decimal import Decimal
 
 class Carpark:
     def __init__(self, id):
@@ -12,20 +13,23 @@ class Carpark:
         self.max_energy_usage = 0
 
     def __str__(self) -> str:
-        stations = ""
+        stations = f"curent time:{self.current_time}\n"
         i = 0
         for station in self.active_charging_stations:
-            stations += f"{i}. {station}\n"
+            stations += f"{i}. {station}\n\n"
             i += 1
         return stations
 
+    def charge(self):
+        for station in self.active_charging_stations:
+            station.charge()
 
-    def actualize(self):
+    def actualize(self, time_period = Decimal(0.25)):
         """
         Actualizes time and active charging stations.
         """
         self.active_charging_stations.clear()
-        self.active_charging_stations = Char_stat_from_db_creator.get_charging_stations(self.id)
+        self.active_charging_stations = Char_stat_from_db_creator.get_charging_stations(self.id, time_period)
         self.current_time = Char_stat_from_db_creator.get_curr_time()
         self.calculate_max_energy_use()
 

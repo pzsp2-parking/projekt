@@ -1,5 +1,5 @@
 class Charging_car:
-    def __init__(self, charge_level, start_charge_level, pickup_time, car_capacity, charger_type, charger_power):
+    def __init__(self, charge_level, start_charge_level, pickup_time, car_capacity, charger_type, charger_power, car_vin=""):
         """
         Args:
             charge_level:           Current charging level of car battery.
@@ -15,6 +15,7 @@ class Charging_car:
         self.car_capacity = car_capacity
         self.charger_type = charger_type
         self.charger_power = charger_power
+        self.car_vin = car_vin
 
     def __str__(self) -> str:
         retStr = f"\tcharge level: {self.charge_level}\t({type(self.charge_level)}),\n"
