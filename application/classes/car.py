@@ -155,7 +155,7 @@ class Car:
 
         time=datetime.now()
 
-        stmt = f"UPDATE charging SET departure_dateime = '{time}' WHERE car_vin='{self.vin}' AND departure_dateime<now();"
+        stmt = f"UPDATE charging SET departure_dateime = '{time}' WHERE car_vin='{self.vin}' AND departure_dateime>NOW();"
         db_conn.exec_change(stmt)
 
         stmt_insert = (
