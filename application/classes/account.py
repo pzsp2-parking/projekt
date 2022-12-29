@@ -175,7 +175,7 @@ class Client(Account):
         car = [x for x in self.cars if x.vin==vin][0]
         car.park(charge_level, charger_id, departure_time)
 
-    def unpark_car(self, vin) -> None:
+    def unpark_car(self, vin: str) -> None:
         """
         TODO: add tests
         Enables client to unpark a given car.
@@ -188,6 +188,19 @@ class Client(Account):
         """
         car = [x for x in self.cars if x.vin==vin][0]
         car.unpark()
+
+    def change_car_departure(self, vin: str, new_time: datetime) -> None:
+        """
+        Client can change the planned departure time of parked car.
+
+        Args:
+            vin:        Parked car's VIN number.
+        """
+        if not vin in [x.vin for x in self.cars]:
+            #TODO: better exception msg
+            raise Exception
+        car = [x for x in self.cars if x.vin==vin][0]
+        car.change_departure(new_time)
 
 
 class Employee(Account):

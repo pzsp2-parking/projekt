@@ -136,6 +136,24 @@ class Car:
 
         db_conn.exec_change(stmt_insert)
 
+    def change_departure(self, new_time: datetime) -> None:
+        """
+        TODO: add tests
+
+        Changes planned departure time of a parked car.
+
+        Args:
+            new_time:         New planned departure time.
+
+        Raises:
+            Exception:        When chosen car is not parked.
+        """
+        if not self.is_parked():
+            raise Exception ("Car is not parked")
+
+        stmt = f"UPDATE charging SET departure_dateime = '{new_time}' WHERE car_vin='{self.vin}' AND departure_dateime>NOW();"
+        db_conn.exec_change(stmt)
+
     def unpark(self) -> None:
         """
         TODO: add tests
@@ -155,8 +173,7 @@ class Car:
 
         time=datetime.now()
 
-        stmt = f"UPDATE charging SET departure_dateime = '{time}' WHERE car_vin='{self.vin}' AND departure_dateime>NOW();"
-        db_conn.exec_change(stmt)
+        self.change_departure(time)
 
         stmt_insert = (
             f"INSERT INTO charging (datetime, base_charge_level, charge_level, departure_dateime, cha_charger_id, car_vin)"
@@ -165,6 +182,5 @@ class Car:
         )
 
         db_conn.exec_change(stmt_insert)
-
 
         
