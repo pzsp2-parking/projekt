@@ -41,6 +41,6 @@ class Char_stat_from_db_creator():
 #     datetime          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 # 	base_charge_level NUMERIC(6, 2) NOT NULL,
 #     charge_level      NUMERIC(6, 2) NOT NULL,
-#     departure_dateime TIMESTAMP NOT NULL,
+#     departure_datetime TIMESTAMP NOT NULL,
 #     cha_charger_id    INTEGER NOT NULL,
 #     car_vin           VARCHAR(17) NOT NULL
