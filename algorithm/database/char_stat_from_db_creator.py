@@ -2,7 +2,8 @@ from database.db_connector import db_cur, db_conn
 from classes.charging_station import Charging_station
 from classes.charging_car import Charging_car
 
-class Char_stat_from_db_creator():
+
+class Char_stat_from_db_creator:
     @staticmethod
     def get_charging_stations(parking_id, time_period):
         charging_stations = []
@@ -10,9 +11,30 @@ class Char_stat_from_db_creator():
         db_cur.execute(stmt)
         char_stat_vals = [car_charg for car_charg in db_cur.fetchall()]
         for char_stat_val in char_stat_vals:
-            charge_level, base_charge_level, datetime, departure_datetime, capacity, maximal_power, charger_type, charger_id, car_park_id, car_vin = char_stat_val 
-            car = Charging_car(charge_level, base_charge_level,  departure_datetime, capacity, charger_type, maximal_power, car_vin) 
-            charging_station = Charging_station(car, charger_id, car_park_id, time_period=time_period)
+            (
+                charge_level,
+                base_charge_level,
+                datetime,
+                departure_datetime,
+                capacity,
+                maximal_power,
+                charger_type,
+                charger_id,
+                car_park_id,
+                car_vin,
+            ) = char_stat_val
+            car = Charging_car(
+                charge_level,
+                base_charge_level,
+                departure_datetime,
+                capacity,
+                charger_type,
+                maximal_power,
+                car_vin,
+            )
+            charging_station = Charging_station(
+                car, charger_id, car_park_id, time_period=time_period
+            )
             charging_stations.append(charging_station)
         return charging_stations
 
@@ -28,12 +50,10 @@ class Char_stat_from_db_creator():
         curr_time = Char_stat_from_db_creator.get_curr_time()
         stmt = (
             f"INSERT INTO charging (datetime, base_charge_level, charge_level, departure_dateime, cha_charger_id, car_vin)"
-            f"VALUES (\'{curr_time}\', {station.car.start_charge_level}, {station.new_charge_level}, \'{station.car.pickup_time}\',"
-            f"{station.charger_id}, \'{station.car.car_vin}\');"
+            f"VALUES ('{curr_time}', {station.car.start_charge_level}, {station.new_charge_level}, '{station.car.pickup_time}',"
+            f"{station.charger_id}, '{station.car.car_vin}');"
         )
         db_conn.exec(stmt)
-        
-
 
 
 # CREATE TABLE charging (

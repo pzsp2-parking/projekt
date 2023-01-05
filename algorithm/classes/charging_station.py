@@ -2,8 +2,11 @@ from classes.charging_car import Charging_car
 from decimal import Decimal
 import datetime
 
+
 class Charging_station:
-    def __init__(self, car:Charging_car, charger_id, carpark_id, time_period=Decimal(0.25)):
+    def __init__(
+        self, car: Charging_car, charger_id, carpark_id, time_period=Decimal(0.25)
+    ):
         """
         Args:
             car:            Charging_car object representing car connected to this station.
@@ -13,11 +16,13 @@ class Charging_station:
         """
         self.car = car
         self.charger_id = charger_id
-        self.carpark_id = carpark_id # Charging station id
-        self.order = 0     #-1 take energy 0 do nothing 1/2 charge with half power 1 charge with full power
-        self.below_start = False    #taking energy would result in unaccteptable energy level
-        self.hour_to_go = False     #hour or less remained from pickup
-        self.status = 0             #bigger status results in car more likely being charged
+        self.carpark_id = carpark_id  # Charging station id
+        self.order = 0  # -1 take energy 0 do nothing 1/2 charge with half power 1 charge with full power
+        self.below_start = (
+            False  # taking energy would result in unaccteptable energy level
+        )
+        self.hour_to_go = False  # hour or less remained from pickup
+        self.status = 0  # bigger status results in car more likely being charged
         self.time_period = time_period
         self.new_charge_level = 0
 
@@ -37,18 +42,31 @@ class Charging_station:
         self.set_hour_to_go(current_time)
 
     def set_hour_to_go(self, current_time):
-        time_to_go =self.car.pickup_time - current_time  
-        if time_to_go <= datetime.timedelta(hours=1)and time_to_go >= datetime.timedelta():
+        time_to_go = self.car.pickup_time - current_time
+        if (
+            time_to_go <= datetime.timedelta(hours=1)
+            and time_to_go >= datetime.timedelta()
+        ):
             self.hour_to_go = True
 
     def set_below_start(self):
-        if self.car.charge_level * self.car.car_capacity / 100 - self.car.charger_power * self.time_period < self.car.start_charge_level * self.car.car_capacity / 100:
+        if (
+            self.car.charge_level * self.car.car_capacity / 100
+            - self.car.charger_power * self.time_period
+            < self.car.start_charge_level * self.car.car_capacity / 100
+        ):
             self.below_start = True
 
     def charge(self):
-        new = (self.car.charge_level * self.car.car_capacity /100 + Decimal(self.order) *self.car.charger_power * self.time_period) /self.car.car_capacity*100
+        new = (
+            (
+                self.car.charge_level * self.car.car_capacity / 100
+                + Decimal(self.order) * self.car.charger_power * self.time_period
+            )
+            / self.car.car_capacity
+            * 100
+        )
         self.new_charge_level = min(new, 100)
-
 
     def set_status(self):
         """
@@ -58,11 +76,11 @@ class Charging_station:
             self.status += 10
         if self.below_start:
             self.status += 5
-        if self.car.charger_type == 'AC':
+        if self.car.charger_type == "AC":
             self.status += 5
         if self.car.charge_level > 80:
             self.status -= 5
-        self.status += (100 - self.car.charge_level)/10
+        self.status += (100 - self.car.charge_level) / 10
 
     def energy_usage(self):
         """
@@ -72,7 +90,7 @@ class Charging_station:
             Energy usage.
         """
         return Decimal(self.order) * self.car.charger_power * self.time_period
-    
+
     def max_energy_usage(self):
         """
         Calculates max posible charging station's energy usage.
@@ -81,7 +99,7 @@ class Charging_station:
             Max posiible energy usage.
         """
         return self.car.charger_power * self.time_period
-    
+
     def set_order(self, order):
         """
         Sets station's order to given power, respecting constraints.
@@ -89,10 +107,8 @@ class Charging_station:
             order:  Power on with charging power should now operate.
         """
         if self.hour_to_go:
-            self.order = max(0.5, order)      # or 0.5?
+            self.order = max(0.5, order)  # or 0.5?
         elif self.below_start:
-            self.order = max(0, order)    # or 0?
+            self.order = max(0, order)  # or 0?
         else:
             self.order = order
-
-

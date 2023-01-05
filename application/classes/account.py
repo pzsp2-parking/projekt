@@ -2,13 +2,16 @@ from __future__ import annotations
 from database.db_connector import db_cur, db_conn
 import psycopg2
 import classes.car as car
+import datetime
 
-CLIENT_TYPE = 'CLIENT'
+CLIENT_TYPE = "CLIENT"
+
 
 class Account:
     """
     Class representing a basic account
     """
+
     def __init__(self, username: str, password: str, mail: str, phone_no: str):
         """
         Args:
@@ -43,7 +46,7 @@ class Account:
         Returns:
             Account's primary key from database.
         """
-        stmt = f"SELECT acc_account_no FROM accounts WHERE acc_name=\'{self.username}\';"
+        stmt = f"SELECT acc_account_no FROM accounts WHERE acc_name='{self.username}';"
         try:
             db_cur.execute(stmt)
             id = db_cur.fetchone()[0]
@@ -56,7 +59,10 @@ class Client(Account):
     """
     Class representing a client's account
     """
-    def __init__(self, username: str, password: str, mail: str, phone_no: str, cars: list = 0):
+
+    def __init__(
+        self, username: str, password: str, mail: str, phone_no: str, cars: list = 0
+    ):
         """
         Args:
             username, password, mail, phone_no: as in Account
@@ -79,8 +85,10 @@ class Client(Account):
         Returns:
             A new Client object.
         """
-        stmt_client = (f"SELECT acc_password, acc_email_address, acc_phone_no "
-                       f"FROM accounts WHERE acc_name=\'{username}\';")
+        stmt_client = (
+            f"SELECT acc_password, acc_email_address, acc_phone_no "
+            f"FROM accounts WHERE acc_name='{username}';"
+        )
         db_cur.execute(stmt_client)
         pwd, mail, phone_no = db_cur.fetchone()
         client = Client(username, pwd, mail, phone_no)
@@ -108,7 +116,7 @@ class Client(Account):
         client = Client(username, password, mail, phone_no)
         stmt_create = (
             f"INSERT INTO accounts (acc_name, acc_password, acc_email_address, acc_phone_no, acc_account_type)"
-            f"VALUES (\'{client.username}\', \'{client._password}\', \'{client.mail}\', \'{client.phone_no}\', \'{CLIENT_TYPE}\');"
+            f"VALUES ('{client.username}', '{client._password}', '{client.mail}', '{client.phone_no}', '{CLIENT_TYPE}');"
         )
         try:
             db_conn.exec_change(stmt_create)
@@ -117,7 +125,9 @@ class Client(Account):
             print(e)
         return client
 
-    def add_car(self, vin: str, reg_no: str, model: str, brand: str, capacity: float) -> car.Car:
+    def add_car(
+        self, vin: str, reg_no: str, model: str, brand: str, capacity: float
+    ) -> car.Car:
         """
         Adds provided car and saves it to client.
 
@@ -154,10 +164,63 @@ class Client(Account):
             if new_car.vin not in ([x.vin for x in self.cars]):
                 self.cars.append(new_car)
 
+    def park_car(
+        self,
+        vin: str,
+        charge_level: float,
+        charger_id: int,
+        departure_time: datetime = None,
+    ) -> None:
+        """
+        Enables client to park a given car.
+
+        Args:
+            vin:              Car's VIN number to be parked.
+            charge_level:     Energy level of the parking car.
+            charger_id:       Id of the used charger.
+            departure_time:   Estimated departure time.
+
+        Returns:
+            None
+        """
+        if not vin in [x.vin for x in self.cars]:
+            # TODO: is it possible to choose not owned car or frontend does not allow?
+            raise Exception
+        car = [x for x in self.cars if x.vin == vin][0]
+        car.park(charge_level, charger_id, departure_time)
+
+    def unpark_car(self, vin: str) -> None:
+        """
+        Enables client to unpark a given car.
+
+        Args:
+            vin:        Car's VIN number to be parked.
+
+        Returns:
+            None
+        """
+        car = [x for x in self.cars if x.vin == vin][0]
+        car.unpark()
+
+    def change_car_departure(self, vin: str, new_time: datetime) -> None:
+        """
+        Client can change the planned departure time of parked car.
+
+        Args:
+            vin:        Parked car's VIN number.
+        """
+        if not vin in [x.vin for x in self.cars]:
+            # TODO: better exception msg
+            raise Exception
+        car = [x for x in self.cars if x.vin == vin][0]
+        car.change_departure(new_time)
+
+
 class Employee(Account):
     """
     Class representing an employee's account.
     """
+
     def __init__(self, username, password, mail, phone_no, parking):
         """
         Args:

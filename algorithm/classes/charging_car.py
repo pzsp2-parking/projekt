@@ -1,5 +1,14 @@
 class Charging_car:
-    def __init__(self, charge_level, start_charge_level, pickup_time, car_capacity, charger_type, charger_power, car_vin=""):
+    def __init__(
+        self,
+        charge_level,
+        start_charge_level,
+        pickup_time,
+        car_capacity,
+        charger_type,
+        charger_power,
+        car_vin="",
+    ):
         """
         Args:
             charge_level:           Current charging level of car battery.
