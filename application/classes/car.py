@@ -3,12 +3,21 @@ from database.db_connector import db_cur, db_conn
 import classes.account as account
 from datetime import datetime, timedelta
 
-DEPARTURE_HOURS=8
+DEPARTURE_HOURS = 8
+
 
 class Car:
     """Class representing a single car"""
 
-    def __init__(self, vin: str, reg_no: str, model: str, brand: str, capacity: float, owner_id: int):
+    def __init__(
+        self,
+        vin: str,
+        reg_no: str,
+        model: str,
+        brand: str,
+        capacity: float,
+        owner_id: int,
+    ):
         """
         Args:
             vin:        VIN number of the car.
@@ -26,7 +35,14 @@ class Car:
         self.owner_id = owner_id
 
     @staticmethod
-    def add_car(client: account.Client, vin: str, reg_no: str, model: str, brand: str, capacity: float) -> Car:
+    def add_car(
+        client: account.Client,
+        vin: str,
+        reg_no: str,
+        model: str,
+        brand: str,
+        capacity: float,
+    ) -> Car:
         """
         Adds a new car to the system.
         Car has to be already owned by a client.
@@ -45,8 +61,8 @@ class Car:
         car = Car(vin, reg_no, model, brand, capacity, client.get_id())
         stmt_create = (
             f"INSERT INTO cars (vin, registration_no, model, brand, capacity, acc_account_no)"
-            f"VALUES (\'{car.vin}\', \'{car.reg_no}\', \'{car.model}\', \'{car.brand}\',"
-            f" \'{car.capacity}\', \'{car.owner_id}\');"
+            f"VALUES ('{car.vin}', '{car.reg_no}', '{car.model}', '{car.brand}',"
+            f" '{car.capacity}', '{car.owner_id}');"
         )
         try:
             db_conn.exec_change(stmt_create)
@@ -66,8 +82,10 @@ class Car:
         Returns:
             A new car object.
         """
-        stmt_cars = (f"SELECT registration_no, model, brand, capacity, acc_account_no "
-                     f"FROM cars WHERE vin=\'{vin}\'")
+        stmt_cars = (
+            f"SELECT registration_no, model, brand, capacity, acc_account_no "
+            f"FROM cars WHERE vin='{vin}'"
+        )
         db_cur.execute(stmt_cars)
         reg_no, model, brand, capacity, acc_no = db_cur.fetchone()
         car = Car(vin, reg_no, model, brand, capacity, acc_no)
@@ -94,7 +112,6 @@ class Car:
 
     def is_parked(self) -> bool:
         """
-        TODO: write tests
         Checks if given car is parked or not.
 
         Returns:
@@ -108,9 +125,10 @@ class Car:
         else:
             return False
 
-    def park(self, charge_level: float, charger_id: int, departure_time: datetime = None) -> None:
+    def park(
+        self, charge_level: float, charger_id: int, departure_time: datetime = None
+    ) -> None:
         """
-        TODO: add tests
         Parks a car updating information in the database.
 
         Args:
@@ -122,11 +140,11 @@ class Car:
             Exception:        When chosen car is already parked.
         """
         if self.is_parked():
-            raise Exception ("Car is already parked")
-        
-        time=datetime.now()
+            raise Exception("Car is already parked")
+
+        time = datetime.now()
         if not departure_time:
-            departure_time=time+timedelta(hours=DEPARTURE_HOURS)
+            departure_time = time + timedelta(hours=DEPARTURE_HOURS)
 
         stmt_insert = (
             f"INSERT INTO charging (datetime, base_charge_level, charge_level, departure_dateime, cha_charger_id, car_vin)"
@@ -138,8 +156,6 @@ class Car:
 
     def change_departure(self, new_time: datetime) -> None:
         """
-        TODO: add tests
-
         Changes planned departure time of a parked car.
 
         Args:
@@ -149,29 +165,27 @@ class Car:
             Exception:        When chosen car is not parked.
         """
         if not self.is_parked():
-            raise Exception ("Car is not parked")
+            raise Exception("Car is not parked")
 
         stmt = f"UPDATE charging SET departure_dateime = '{new_time}' WHERE car_vin='{self.vin}' AND departure_dateime>NOW();"
         db_conn.exec_change(stmt)
 
     def unpark(self) -> None:
         """
-        TODO: add tests
-
         Unparks a car updating information in the database.
 
         Raises:
             Exception:        When chosen car is not parked.
         """
         if not self.is_parked():
-            raise Exception ("Car is not parked")
-        
+            raise Exception("Car is not parked")
+
         stmt = f"select charge_level, cha_charger_id from charging where car_vin='{self.vin}' ORDER BY datetime DESC;"
 
         db_cur.execute(stmt)
-        charge_level, charger_id=db_cur.fetchone()
+        charge_level, charger_id = db_cur.fetchone()
 
-        time=datetime.now()
+        time = datetime.now()
 
         self.change_departure(time)
 
@@ -182,5 +196,3 @@ class Car:
         )
 
         db_conn.exec_change(stmt_insert)
-
-        
