@@ -33,7 +33,7 @@ class DBConn(metaclass=SingletonMeta):
             host=self.host,
             user=self.user,
             password=self.password,
-            database=self.database
+            database=self.database,
         )
         self.db_cur = self.db_connection.cursor()
 
@@ -45,10 +45,10 @@ class DBConn(metaclass=SingletonMeta):
         stmt = ""
         with open(path) as fp:
             for line in fp.readlines():
-                line = line.replace('\n', '')
+                line = line.replace("\n", "")
                 if not line:
                     continue
-                if line[-1] == ';':
+                if line[-1] == ";":
                     stmt += line
                     stmts.append(stmt)
                     stmt = ""

@@ -4,7 +4,6 @@ from classes.balancer import Balancer
 from database.to_database import To_database
 
 
-
 def example():
     op = Operator_mockup(-50, 150)
     b = Balancer()
@@ -21,5 +20,5 @@ def example():
     print("Usage:", usage)
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
     example()

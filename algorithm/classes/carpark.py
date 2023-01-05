@@ -1,6 +1,7 @@
 from database.char_stat_from_db_creator import Char_stat_from_db_creator
 from decimal import Decimal
 
+
 class Carpark:
     def __init__(self, id):
         """
@@ -24,12 +25,14 @@ class Carpark:
         for station in self.active_charging_stations:
             station.charge()
 
-    def actualize(self, time_period = Decimal(0.25)):
+    def actualize(self, time_period=Decimal(0.25)):
         """
         Actualizes time and active charging stations.
         """
         self.active_charging_stations.clear()
-        self.active_charging_stations = Char_stat_from_db_creator.get_charging_stations(self.id, time_period)
+        self.active_charging_stations = Char_stat_from_db_creator.get_charging_stations(
+            self.id, time_period
+        )
         self.current_time = Char_stat_from_db_creator.get_curr_time()
         self.calculate_max_energy_use()
 
@@ -58,7 +61,7 @@ class Carpark:
     def set_all_stations(self, order):
         """
         Sets all stations orders to given value (respecting constraints).
-        
+
         Returns:
             Energy usage of a whole carpark, after seting orders.
         """
