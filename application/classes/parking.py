@@ -6,6 +6,7 @@ import classes.car as car
 EMPTY = 0
 OCCUPIED = 1
 
+
 class Parking:
     """Class representing a single parking"""
 
@@ -15,7 +16,7 @@ class Parking:
             places:     Number of places on the parking.
             city:       City where parking is located.
             street:     Street where parking is located.
-            addr_no:    Address number where parking is located.
+            addr_nr:    Address number where parking is located.
             id:         Unique id of the parking.
         """
         self.places = places
@@ -68,7 +69,9 @@ class Parking:
             List of Parking objects.
         """
         result = []
-        stmt = "SELECT spaces_no, city, street, building_no, car_park_id FROM car_parks;"
+        stmt = (
+            "SELECT spaces_no, city, street, building_no, car_park_id FROM car_parks;"
+        )
         db_cur.execute(stmt)
         parkings = db_cur.fetchall()
         for parking in parkings:
@@ -100,16 +103,18 @@ class Parking:
             row, col = charger_place(code[0])
             if row > max_row:
                 max_row = row
-            elif col > max_col:
+            if col > max_col:
                 max_col = col
-        park_map = empty_parking(max_col+1, max_row+1)
-        stmt_occupied = f"SELECT charger_code FROM cars_charging WHERE car_park_id={id};"
+        park_map = empty_parking(max_col + 1, max_row + 1)
+        stmt_occupied = (
+            f"SELECT charger_code FROM cars_charging WHERE car_park_id={id};"
+        )
         db_cur.execute(stmt_occupied)
         for code in db_cur.fetchall():
             row, col = charger_place(code[0])
             park_map[row][col] = OCCUPIED
+        print(park_map)
         return park_map
-
 
     def get_all_cars(self) -> list[car.Car]:
         """
@@ -126,6 +131,7 @@ class Parking:
             cars.append(car)
         return cars
 
+
 def charger_place(charger_code: str) -> tuple:
     """
     Get charger's place on the parking: row and column positions
@@ -137,7 +143,7 @@ def charger_place(charger_code: str) -> tuple:
         Row and column position of the charger on a parking.
 
     """
-    parking, row, col = charger_code.split('-')
+    parking, row, col = charger_code.split("-")
     return (int(row), int(col))
 
 

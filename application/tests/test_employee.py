@@ -1,19 +1,19 @@
 import sys
 from pathlib import Path
-import datetime
 
 sys.path.append(str(Path(__file__).parent.parent))
 import unittest
-from unittest.mock import patch, Mock
-from classes.account import Account, Employee
+from unittest.mock import patch
+from classes.account import Employee
 
 TEST_EMPLOYEE1 = {
     "username": "employee1",
     "password": "XXXX",
     "mail": "client@gmail.com",
     "phone_no": "123456789",
-    "parking": '1',
+    "parking": "1",
 }
+
 
 class TestEmployee(unittest.TestCase):
     def test_create_employee(self):
@@ -28,6 +28,7 @@ class TestEmployee(unittest.TestCase):
         employee = Employee.get_employee(TEST_EMPLOYEE1["username"])
         self.assertEqual(employee.parking, TEST_EMPLOYEE1["parking"])
         self.assertEqual(employee.username, TEST_EMPLOYEE1["username"])
+
 
 if __name__ == "__main__":
     unittest.main()

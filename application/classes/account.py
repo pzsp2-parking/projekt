@@ -71,7 +71,6 @@ class Account:
         return type
 
 
-
 class Client(Account):
     """
     Class representing a client's account
@@ -238,7 +237,9 @@ class Employee(Account):
     Class representing an employee's account.
     """
 
-    def __init__(self, username: str, password: str, mail: str, phone_no: str, parking: str) -> None:
+    def __init__(
+        self, username: str, password: str, mail: str, phone_no: str, parking: str
+    ) -> None:
         """
         Args:
             username, password, mail, phone_no: as in Account

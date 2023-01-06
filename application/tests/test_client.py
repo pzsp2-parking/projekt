@@ -4,8 +4,8 @@ import datetime
 
 sys.path.append(str(Path(__file__).parent.parent))
 import unittest
-from unittest.mock import patch, Mock
-from classes.account import Account, Client
+from unittest.mock import patch
+from classes.account import Client
 from classes.car import Car
 
 TEST_CAR1 = {
@@ -42,8 +42,6 @@ TEST_CLIENT2 = {
     "phone_no": "234567891",
     "cars": [Car(**TEST_CAR1)],
 }
-
-# TODO: test Account
 
 
 class TestClient(unittest.TestCase):
