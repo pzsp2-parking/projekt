@@ -54,6 +54,23 @@ class Account:
             print(e)
         return id
 
+    @staticmethod
+    def get_type(username: str) -> str:
+        """
+        Get account's type by username.
+
+        Returns:
+            Account's type: EMPLOYEE or CLIENT.
+        """
+        stmt = f"SELECT account_type FROM accounts WHERE name='{username}';"
+        try:
+            db_cur.execute(stmt)
+            type = db_cur.fetchone()[0]
+        except Exception as e:
+            print(e)
+        return type
+
+
 
 class Client(Account):
     """
@@ -221,7 +238,7 @@ class Employee(Account):
     Class representing an employee's account.
     """
 
-    def __init__(self, username, password, mail, phone_no, parking):
+    def __init__(self, username: str, password: str, mail: str, phone_no: str, parking: str) -> None:
         """
         Args:
             username, password, mail, phone_no: as in Account
@@ -229,3 +246,23 @@ class Employee(Account):
         """
         super().__init__(username, password, mail, phone_no)
         self.parking = parking
+
+    @staticmethod
+    def get_employee(username: str) -> Employee:
+        """
+        Fetching employee information from database using unique username.
+
+        Args:
+            username:        Employee's username.
+
+        Returns:
+            A new Employee object.
+        """
+        stmt_employee = (
+            f"SELECT password, email_address, phone_no, cpa_car_park_id"
+            f"FROM accounts WHERE name='{username}';"
+        )
+        db_cur.execute(stmt_employee)
+        pwd, mail, phone_no, parking = db_cur.fetchone()
+        employee = Employee(username, pwd, mail, phone_no, parking)
+        return employee
