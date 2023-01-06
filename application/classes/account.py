@@ -46,7 +46,7 @@ class Account:
         Returns:
             Account's primary key from database.
         """
-        stmt = f"SELECT acc_account_no FROM accounts WHERE acc_name='{self.username}';"
+        stmt = f"SELECT account_no FROM accounts WHERE name='{self.username}';"
         try:
             db_cur.execute(stmt)
             id = db_cur.fetchone()[0]
@@ -86,8 +86,8 @@ class Client(Account):
             A new Client object.
         """
         stmt_client = (
-            f"SELECT acc_password, acc_email_address, acc_phone_no "
-            f"FROM accounts WHERE acc_name='{username}';"
+            f"SELECT password, email_address, phone_no "
+            f"FROM accounts WHERE name='{username}';"
         )
         db_cur.execute(stmt_client)
         pwd, mail, phone_no = db_cur.fetchone()
@@ -115,7 +115,7 @@ class Client(Account):
         """
         client = Client(username, password, mail, phone_no)
         stmt_create = (
-            f"INSERT INTO accounts (acc_name, acc_password, acc_email_address, acc_phone_no, acc_account_type)"
+            f"INSERT INTO accounts (name, password, email_address, phone_no, account_type)"
             f"VALUES ('{client.username}', '{client._password}', '{client.mail}', '{client.phone_no}', '{CLIENT_TYPE}');"
         )
         try:

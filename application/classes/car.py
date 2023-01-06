@@ -147,7 +147,7 @@ class Car:
             departure_time = time + timedelta(hours=DEPARTURE_HOURS)
 
         stmt_insert = (
-            f"INSERT INTO charging (datetime, base_charge_level, charge_level, departure_dateime, cha_charger_id, car_vin)"
+            f"INSERT INTO charging (datetime, base_charge_level, charge_level, departure_datetime, cha_charger_code, car_vin)"
             f"VALUES ('{time}', '{charge_level}', '{charge_level}', '{departure_time}',"
             f" '{charger_id}', '{self.vin}');"
         )
@@ -167,7 +167,7 @@ class Car:
         if not self.is_parked():
             raise Exception("Car is not parked")
 
-        stmt = f"UPDATE charging SET departure_dateime = '{new_time}' WHERE car_vin='{self.vin}' AND departure_dateime>NOW();"
+        stmt = f"UPDATE charging SET departure_datetime = '{new_time}' WHERE car_vin='{self.vin}' AND departure_dateime>NOW();"
         db_conn.exec_change(stmt)
 
     def unpark(self) -> None:
@@ -180,7 +180,7 @@ class Car:
         if not self.is_parked():
             raise Exception("Car is not parked")
 
-        stmt = f"select charge_level, cha_charger_id from charging where car_vin='{self.vin}' ORDER BY datetime DESC;"
+        stmt = f"select charge_level, cha_charger_code from charging where car_vin='{self.vin}' ORDER BY datetime DESC;"
 
         db_cur.execute(stmt)
         charge_level, charger_id = db_cur.fetchone()
@@ -190,7 +190,7 @@ class Car:
         self.change_departure(time)
 
         stmt_insert = (
-            f"INSERT INTO charging (datetime, base_charge_level, charge_level, departure_dateime, cha_charger_id, car_vin)"
+            f"INSERT INTO charging (datetime, base_charge_level, charge_level, departure_datetime, cha_charger_code, car_vin)"
             f"VALUES ('{time}', '{charge_level}', '{charge_level}', '{time}',"
             f" '{charger_id}', '{self.vin}');"
         )
