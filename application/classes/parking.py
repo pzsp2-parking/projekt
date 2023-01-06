@@ -32,7 +32,7 @@ class Parking:
             A new Parking object.
         """
         stmt_parking = (
-            f"SELECT places, city, street, addr_nr"
+            f"SELECT spaces_no, city, street, building_no"
             f"FROM car_parks WHERE car_park_id='{id}';"
         )
         db_cur.execute(stmt_parking)
@@ -54,6 +54,29 @@ class Parking:
         employee = account.Employee.get_employee(username)
         parking = Parking.get_parking(employee.parking)
         return parking
+
+    @staticmethod
+    def get_all_parkings() -> list[Parking]:
+        """
+        Getting all available parkings from db.
+
+        Returns:
+            List of Parking objects.
+        """
+        result = []
+        stmt = "SELECT spaces_no, city, street, building_no, car_park_id FROM car_parks;"
+        db_cur.execute(stmt)
+        parkings = db_cur.fetchall()
+        for parking in parkings:
+            spaces_no = str(parking[0])
+            city = str(parking[1])
+            street = str(parking[2])
+            addr_no = str(parking[3])
+            id = str(parking[4])
+            new_parking = Parking(spaces_no, city, street, addr_no, id)
+            result.append(new_parking)
+        return result
+
 
     def get_parking_map(self):
         pass
