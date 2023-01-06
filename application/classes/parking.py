@@ -1,6 +1,10 @@
 from __future__ import annotations
 from database.db_connector import db_cur, db_conn
 import classes.account as account
+import classes.car as car
+
+EMPTY = 0
+OCCUPIED = 1
 
 class Parking:
     """Class representing a single parking"""
@@ -32,7 +36,7 @@ class Parking:
             A new Parking object.
         """
         stmt_parking = (
-            f"SELECT spaces_no, city, street, building_no"
+            f"SELECT spaces_no, city, street, building_no "
             f"FROM car_parks WHERE car_park_id='{id}';"
         )
         db_cur.execute(stmt_parking)
@@ -77,7 +81,78 @@ class Parking:
             result.append(new_parking)
         return result
 
+    @staticmethod
+    def get_parking_map(id) -> list[list]:
+        """
+        Creates a parking map as a matrix.
+        With places marked either as EMPTY or OCCUPIED.
 
-    def get_parking_map(self):
-        pass
+        Args:
+            id:     Id of the parking.
 
+        Returns:
+            A matrix with empty and occupied places with chargers on the parking.
+        """
+        max_row, max_col = 0, 0
+        stmt_all = f"SELECT charger_code FROM chargers WHERE cpa_car_park_id={id};"
+        db_cur.execute(stmt_all)
+        for code in db_cur.fetchall():
+            row, col = charger_place(code[0])
+            if row > max_row:
+                max_row = row
+            elif col > max_col:
+                max_col = col
+        park_map = empty_parking(max_col+1, max_row+1)
+        stmt_occupied = f"SELECT charger_code FROM cars_charging WHERE car_park_id={id};"
+        db_cur.execute(stmt_occupied)
+        for code in db_cur.fetchall():
+            row, col = charger_place(code[0])
+            park_map[row][col] = OCCUPIED
+        return park_map
+
+
+    def get_all_cars(self) -> list[car.Car]:
+        """
+        Getting all parked cars on given parking from db.
+
+        Returns:
+            List of parked Car objects.
+        """
+        cars = []
+        stmt = f"SELECT vin FROM cars_charging WHERE car_park_id='{self.id}'"
+        db_cur.execute(stmt)
+        for vin in db_cur.fetchall():
+            car = car.Car.get_car(vin)
+            cars.append(car)
+        return cars
+
+def charger_place(charger_code: str) -> tuple:
+    """
+    Get charger's place on the parking: row and column positions
+
+    Args:
+        charger_code:   Unique code of the charger.
+
+    Returns:
+        Row and column position of the charger on a parking.
+
+    """
+    parking, row, col = charger_code.split('-')
+    return (int(row), int(col))
+
+
+def empty_parking(col: int, row: int) -> list:
+    """
+    Creates a map of empty parking - with all zeros
+
+    Args:
+        row:    Number of rows.
+        col:    Number of columns.
+
+    Returns:
+        List acting as a map of parking.
+    """
+    parking = [EMPTY for _ in range(col)]
+    for c in range(col):
+        parking[c] = [EMPTY for _ in range(row)]
+    return parking
