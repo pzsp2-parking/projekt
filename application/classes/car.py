@@ -126,7 +126,7 @@ class Car:
             return False
 
     def park(
-        self, charge_level: float, charger_id: int, departure_time: datetime = None
+        self, charge_level: float, charger_id: str, departure_time: datetime = None
     ) -> None:
         """
         Parks a car updating information in the database.
@@ -167,7 +167,7 @@ class Car:
         if not self.is_parked():
             raise Exception("Car is not parked")
 
-        stmt = f"UPDATE charging SET departure_datetime = '{new_time}' WHERE car_vin='{self.vin}' AND departure_dateime>NOW();"
+        stmt = f"UPDATE charging SET departure_datetime = '{new_time}' WHERE car_vin='{self.vin}' AND departure_datetime>NOW();"
         db_conn.exec_change(stmt)
 
     def unpark(self) -> None:

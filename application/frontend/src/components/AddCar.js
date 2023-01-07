@@ -58,7 +58,7 @@ function AddCar(props) {
       <form>
         <p>
           <input onChange={handleChange} 
-                type="vin"
+                type="text"
                 text={newCarForm.vin} 
                 name="vin" 
                 placeholder="VIN" 
@@ -66,7 +66,7 @@ function AddCar(props) {
         </p>
         <p>
           <input onChange={handleChange} 
-                type="reg_no"
+                type="text"
                 text={newCarForm.reg_no} 
                 name="reg_no" 
                 placeholder="Registration nr" 
@@ -74,7 +74,7 @@ function AddCar(props) {
         </p>
         <p>
           <input onChange={handleChange} 
-                type="brand"
+                type="text"
                 text={newCarForm.brand} 
                 name="brand" 
                 placeholder="Brand" 
@@ -82,7 +82,7 @@ function AddCar(props) {
         </p>
         <p>
           <input onChange={handleChange} 
-                type="model"
+                type="text"
                 text={newCarForm.model} 
                 name="model" 
                 placeholder="Model" 
@@ -90,7 +90,7 @@ function AddCar(props) {
         </p>
         <p>
           <input onChange={handleChange} 
-                type="capacity"
+                type="text"
                 text={newCarForm.capacity} 
                 name="capacity" 
                 placeholder="Capacity" 

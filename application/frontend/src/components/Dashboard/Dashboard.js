@@ -10,16 +10,36 @@ function details(event) {
 
 }
 
-function leave(event) {
-
+function leave(token, cars, index, setClientData) {
+  axios({
+    method: "POST",
+    url:"/api/leave",
+    headers: {
+      Authorization: 'Bearer ' + token
+    },
+    data:{
+      vin: cars[index].vin
+    }
+  }).then(() => {
+    cars[index].parked = !cars[index].parked
+    setClientData(prevNote => ({
+      ...prevNote, cars: cars
+    }))
+  }).catch((error) => {
+    if (error.response) {
+      console.log(error.response)
+      console.log(error.response.status)
+      console.log(error.response.headers)
+    }
+  })
 }
 
-function park(event) {
-
+function park(vin, navigate) {
+  navigate("/park", {state: {vin: vin}})
 }
 
 const CarTable = (props) => {
-  const positions = props.cars.map(car => {
+  const positions = props.cars.map((car, index) => {
     return (
       <tr>
         <td>{car.reg_no}</td>
@@ -30,22 +50,22 @@ const CarTable = (props) => {
           <button type="button" class="btn btn-link" onClick={details}>Details</button>}
         </td>
         <td>{car.parked ?
-          (<button type="button" class="btn btn-danger" onClick={leave}>Leave</button>)
-          :(<button type="button" class="btn btn-success" onClick={park}>Park</button>)}
+          (<button type="button" class="btn btn-danger" onClick={() => leave(props.token, props.cars, index, props.setClientData)}>Leave</button>)
+          :(<button type="button" class="btn btn-success" onClick={() => park(car.vin, props.navigate)}>Park</button>)}
         </td>
       </tr>
     )
   })
   return (
-    <table class="table>">
+    <table class="table">
       <thead>
         <tr>
-          <th style={{width: '30%'}}>Registration nr</th>
-          <th style={{width: '15%'}}>Brand</th>
-          <th style={{width: '15%'}}>Model</th>
-          <th style={{width: '15%'}}>Parked</th>
-          <th style={{width: '15%'}}>Details</th>
-          <th style={{width: '20%'}}>Change</th>
+          <th>Registration nr</th>
+          <th>Brand</th>
+          <th>Model</th>
+          <th>Parked</th>
+          <th>Details</th>
+          <th>Change</th>
         </tr>
       </thead>
       <tbody>{positions}</tbody>
@@ -84,13 +104,13 @@ export default function Dashboard(props) {
         console.log(error.response.headers)
         }
     })
-  }, []);
+  }, [props]);
 
   return (
     <div className='Dashboard'>
       {clientData &&
         <div>
-          <CarTable cars={clientData.cars} />
+          <CarTable cars={clientData.cars} token={props.token} navigate={navigate} setClientData={setClientData} />
         </div>
       }
       <button type="button" class="btn btn-success" onClick={addCar}>Add car</button>

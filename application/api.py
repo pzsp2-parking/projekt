@@ -1,5 +1,4 @@
 import json
-import random
 from flask import Flask, request, jsonify
 from datetime import datetime, timedelta, timezone
 from flask_jwt_extended import (
@@ -14,6 +13,7 @@ from flask_jwt_extended import (
 
 from classes.account import Client
 from classes.car import Car
+from classes.parking import Parking
 
 app = Flask(__name__)
 
@@ -107,11 +107,52 @@ def get_client_data():
         "username": cli.username,
         "cars": [
             {
+                "vin": car.vin,
                 "reg_no": car.reg_no,
                 "model": car.model,
                 "brand": car.brand,
-                "parked": random.random() > 0.5,  # TODO: Return if car is parked
+                "parked": car.is_parked(),
             }
             for car in cli.cars
+        ],
+    }
+
+
+@app.route("/api/leave", methods=["POST"])
+@jwt_required()
+def leave():
+    vin = request.json.get("vin", None)
+    car = Car.get_car(vin)
+    car.unpark()
+    response = jsonify({"msg": "leave successful"})
+    return response
+
+
+@app.route("/api/park", methods=["POST"])
+@jwt_required()
+def park():
+    vin = request.json.get("vin", None)
+    car = Car.get_car(vin)
+    charge = request.json.get("currentCharge", None)
+    charger = request.json.get("chosenCharger", None)
+    leave = request.json.get("leaveDatetime", None)
+    leaveDatetime = datetime.strptime(leave, "%Y-%m-%dT%H:%M:%S.%fz")
+    leaveDatetime += timedelta(hours=1)
+    car.park(charge, charger, leaveDatetime)
+    response = jsonify({"msg": "park successful"})
+    return response
+
+
+@app.route("/api/carparks", methods=["POST"])
+@jwt_required()
+def get_carparks():
+    parks = Parking.get_all_parkings()
+    return {
+        "parks": [
+            {
+                "id": park.id,
+                "address": park.street + ' ' + park.addr_nr + ', ' + park.city,
+            }
+            for park in parks
         ],
     }
