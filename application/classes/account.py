@@ -3,6 +3,7 @@ from database.db_connector import db_cur, db_conn
 import psycopg2
 import classes.car as car
 import datetime
+import hashlib
 
 CLIENT_TYPE = "CLIENT"
 
@@ -37,7 +38,8 @@ class Account:
             True:       When password is correct.
             False:      When password is incorrect.
         """
-        return pwd == self._password
+        hashed_password = hashlib.sha256(pwd .encode('utf-8')).hexdigest()
+        return hashed_password == self._password
 
     def get_id(self) -> int:
         """
@@ -129,7 +131,8 @@ class Client(Account):
         Raises:
             UniqueViolation.
         """
-        client = Client(username, password, mail, phone_no)
+        hashed_password = hashlib.sha256(password.encode('utf-8')).hexdigest()
+        client = Client(username, hashed_password, mail, phone_no)
         stmt_create = (
             f"INSERT INTO accounts (name, password, email_address, phone_no, account_type)"
             f"VALUES ('{client.username}', '{client._password}', '{client.mail}', '{client.phone_no}', '{CLIENT_TYPE}');"
