@@ -1,3 +1,4 @@
+
 DROP TABLE IF EXISTS requests CASCADE;
 DROP TABLE IF EXISTS charging CASCADE;
 DROP TABLE IF EXISTS chargers CASCADE;
@@ -8,7 +9,7 @@ DROP TABLE IF EXISTS car_parks CASCADE;
 CREATE TABLE accounts (
     account_no          SERIAL NOT NULL,
     name                VARCHAR(20) NOT NULL,
-    password            VARCHAR(30) NOT NULL,
+    password            VARCHAR(64) NOT NULL,
     email_address       VARCHAR(20) NOT NULL,
     phone_no            CHAR(9) NOT NULL,
 	account_type        VARCHAR(8) NOT NULL,
@@ -26,6 +27,12 @@ ALTER TABLE accounts ADD CONSTRAINT acc_pk PRIMARY KEY ( account_no );
 
 ALTER TABLE accounts ADD CONSTRAINT acc_name_un UNIQUE ( name );
 
+CREATE INDEX acc_cpa__idx ON
+    accounts (
+        cpa_car_park_ID
+    ASC );
+
+
 CREATE TABLE cars (
     vin             VARCHAR(17) NOT NULL,
     registration_no VARCHAR(9) NOT NULL,
@@ -40,6 +47,12 @@ ALTER TABLE cars ADD CONSTRAINT car_pk PRIMARY KEY ( vin );
 
 ALTER TABLE cars ADD CONSTRAINT car_reg_no_un UNIQUE ( registration_no );
 
+CREATE INDEX car_acc__idx ON
+    cars (
+        acc_account_no
+    ASC );
+
+
 CREATE TABLE car_parks (
     car_park_id SERIAL NOT NULL,
     spaces_no   NUMERIC(3) NOT NULL,
@@ -51,7 +64,7 @@ CREATE TABLE car_parks (
 ALTER TABLE car_parks ADD CONSTRAINT cpa_pk PRIMARY KEY ( car_park_id );
 
 CREATE TABLE chargers (
-    charger_id      SERIAL NOT NULL,
+    charger_code    CHAR(8) NOT NULL,
     maximal_power   NUMERIC(3) NOT NULL,
     charger_type    CHAR(2) NOT NULL,
     description     VARCHAR(100),
@@ -63,30 +76,30 @@ ALTER TABLE chargers
 														OR
 														( charger_type = 'DC' ) );
 
-ALTER TABLE chargers ADD CONSTRAINT cha_pk PRIMARY KEY ( charger_id );
+ALTER TABLE chargers ADD CONSTRAINT cha_pk PRIMARY KEY ( charger_code );
+
+CREATE INDEX cha_cpa__idx ON
+    chargers (
+        CPA_car_park_ID
+    ASC );
+
 
 CREATE TABLE charging (
     datetime          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	base_charge_level NUMERIC(6, 2) NOT NULL,
     charge_level      NUMERIC(6, 2) NOT NULL,
-    departure_dateime TIMESTAMP NOT NULL,
-    cha_charger_id    INTEGER NOT NULL,
+    departure_datetime TIMESTAMP NOT NULL,
+    cha_charger_code  CHAR(8) NOT NULL,
     car_vin           VARCHAR(17) NOT NULL
 );
 
-CREATE INDEX cin_vin__idx ON
-    charging (
-        car_vin
-    ASC );
-
 CREATE INDEX cin_cha__idxv1 ON
     charging (
-        cha_charger_id
+        cha_charger_code
     ASC );
 
 ALTER TABLE charging
-    ADD CONSTRAINT cin_pk PRIMARY KEY ( cha_charger_id,
-                                        car_vin,
+    ADD CONSTRAINT cin_pk PRIMARY KEY ( car_vin,
                                         datetime );
 
 
@@ -97,7 +110,7 @@ CREATE TABLE requests (
     cpa_car_park_id INTEGER NOT NULL
 );
 
-CREATE INDEX req__idx ON
+CREATE INDEX req_cpa__idx ON
     requests (
         cpa_car_park_id
     ASC );
@@ -118,8 +131,8 @@ ALTER TABLE chargers
         REFERENCES car_parks ( car_park_id );
 
 ALTER TABLE charging
-    ADD CONSTRAINT cin_char_fk FOREIGN KEY ( cha_charger_id )
-        REFERENCES chargers ( charger_id );
+    ADD CONSTRAINT cin_char_fk FOREIGN KEY ( cha_charger_code )
+        REFERENCES chargers ( charger_code );
 
 ALTER TABLE accounts
     ADD CONSTRAINT acc_cpa_fk FOREIGN KEY ( cpa_car_park_id )
@@ -153,7 +166,7 @@ $$
 LANGUAGE plpgsql;
 
 CREATE OR REPLACE TRIGGER fkntm_charging BEFORE
-    UPDATE OF cha_charger_id, car_vin ON charging
+    UPDATE OF cha_charger_code, car_vin ON charging
 EXECUTE PROCEDURE msgnontransferable();
 
 CREATE OR REPLACE TRIGGER fkntm_request BEFORE
@@ -173,18 +186,18 @@ WHERE account_type LIKE 'CLIENT';
 CREATE OR REPLACE VIEW parked_cars AS
 SELECT vin, registration_no, model, brand, capacity, description, acc_account_no 
 FROM cars CAR JOIN charging CIN on CAR.vin = CIN.CAR_vin 
-WHERE cin.departure_dateime > CURRENT_TIMESTAMP;
+WHERE cin.departure_datetime > CURRENT_TIMESTAMP;
 
 CREATE OR REPLACE VIEW cars_charging AS
 WITH currently_charged AS (
 	SELECT DISTINCT ON (car_vin) 
-	base_charge_level, charge_level, car_vin, cha_charger_id, datetime, departure_dateime
+	base_charge_level, charge_level, car_vin, cha_charger_code, datetime, departure_datetime
 	FROM charging
-	WHERE CURRENT_TIMESTAMP < departure_dateime
+	WHERE CURRENT_TIMESTAMP < departure_datetime
 	ORDER BY car_vin
 )
-SELECT CIN.charge_level, CIN.base_charge_level, CIN.datetime, CIN.departure_dateime, CARS.capacity, CHA.Maximal_power, CHA.charger_type, CHA.charger_id, CPA.car_park_ID, CARS.vin 
-FROM (((car_parks as CPA join chargers AS CHA on CPA.car_park_id = CHA.cpa_car_park_id) JOIN currently_charged AS CIN ON CHA.charger_id = CIN.cha_charger_id) 
+SELECT CIN.charge_level, CIN.base_charge_level, CIN.datetime, CIN.departure_datetime, CARS.capacity, CHA.Maximal_power, CHA.charger_type, CHA.charger_code, CPA.car_park_ID, CARS.vin 
+FROM (((car_parks as CPA join chargers AS CHA on CPA.car_park_id = CHA.cpa_car_park_id) JOIN currently_charged AS CIN ON CHA.charger_code = CIN.cha_charger_code) 
 JOIN cars ON cars.vin = CIN.car_vin);
 
 INSERT INTO car_parks (spaces_no, city, street, building_no) VALUES 
@@ -207,52 +220,53 @@ VALUES ('employee', 'haslo123', 'mail@mail.com', '888666777', 'EMPLOYEE', 1),
 ('d.gonk', 'haslo123', 'gonk@gmail.com', '848686777', 'EMPLOYEE', 2),
 ('e.monk', 'haslo123', 'monk@gmail.com', '858696777', 'EMPLOYEE', 3);
 
-INSERT INTO chargers (maximal_power, charger_type, description, cpa_car_park_id)
-VALUES (200, 'DC', 'Nice charger', 1),
- (80, 'DC', 'Nice charger', 1),
- (80, 'DC', 'Nice charger', 1),
- (80, 'DC', 'Nice charger', 1),
- (20, 'AC', 'Nice charger', 1),
- (20, 'AC', 'Nice charger', 1),
- (20, 'AC', 'Nice charger', 1),
- (80, 'DC', 'Nice charger', 1),
- (80, 'DC', 'Nice charger', 1),
- (80, 'DC', 'Nice charger', 1),
- (80, 'DC', 'Nice charger', 1),
- (80, 'DC', 'Nice charger', 1),
- (80, 'DC', 'Nice charger', 1),
- (80, 'DC', 'Nice charger', 1),
- (80, 'DC', 'Nice charger', 1),
- (80, 'DC', 'Nice charger', 1),
- (80, 'DC', 'Nice charger', 1),
- (80, 'DC', 'Nice charger', 1),
- (20, 'AC', 'Nice charger', 2),
- (20, 'AC', 'Nice charger', 2),
- (20, 'AC', 'Nice charger', 2),
- (20, 'AC', 'Nice charger', 2),
- (20, 'AC', 'Nice charger', 2),
- (20, 'AC', 'Nice charger', 2),
- (20, 'AC', 'Nice charger', 2),
- (20, 'AC', 'Nice charger', 2),
- (20, 'AC', 'Nice charger', 2),
- (20, 'AC', 'Nice charger', 2),
- (20, 'AC', 'Nice charger', 2),
- (20, 'AC', 'Nice charger', 2),
- (20, 'AC', 'Nice charger', 2),
- (20, 'AC', 'Nice charger', 2),
- (20, 'AC', 'Nice charger', 2),
- (20, 'AC', 'Nice charger', 2),
- (20, 'AC', 'Nice charger', 2),
- (150, 'DC', 'Nice charger', 3),
- (150, 'DC', 'Nice charger', 3),
- (150, 'DC', 'Nice charger', 3),
- (150, 'DC', 'Nice charger', 3),
- (150, 'DC', 'Nice charger', 3),
- (10, 'AC', 'Nice charger', 3),
- (10, 'AC', 'Nice charger', 3),
- (10, 'AC', 'Nice charger', 3),
- (10, 'AC', 'Nice charger', 3),
- (10, 'AC', 'Nice charger', 3);
+INSERT INTO chargers (charger_code, maximal_power, charger_type, description, cpa_car_park_id)
+VALUES 
+ ('01-00-00', 80, 'DC', 'Nice charger', 1),
+ ('01-00-01', 80, 'DC', 'Nice charger', 1),
+ ('01-00-02', 80, 'DC', 'Nice charger', 1),
+ ('01-00-03', 20, 'AC', 'Nice charger', 1),
+ ('01-00-04', 20, 'AC', 'Nice charger', 1),
+ ('01-00-05', 20, 'AC', 'Nice charger', 1),
+ ('01-00-06', 80, 'DC', 'Nice charger', 1),
+ ('01-00-07', 80, 'DC', 'Nice charger', 1),
+ ('01-00-08', 80, 'DC', 'Nice charger', 1),
+ ('01-00-09', 80, 'DC', 'Nice charger', 1),
+ ('01-01-00', 80, 'DC', 'Nice charger', 1),
+ ('01-01-01', 80, 'DC', 'Nice charger', 1),
+ ('01-01-02', 80, 'DC', 'Nice charger', 1),
+ ('01-01-03', 80, 'DC', 'Nice charger', 1),
+ ('01-01-04', 80, 'DC', 'Nice charger', 1),
+ ('02-00-00', 20, 'AC', 'Nice charger', 2),
+ ('02-00-01', 20, 'AC', 'Nice charger', 2),
+ ('02-00-02', 20, 'AC', 'Nice charger', 2),
+ ('02-00-03', 20, 'AC', 'Nice charger', 2),
+ ('02-00-04', 20, 'AC', 'Nice charger', 2),
+ ('02-00-05', 20, 'AC', 'Nice charger', 2),
+ ('02-00-06', 20, 'AC', 'Nice charger', 2),
+ ('02-00-07', 20, 'AC', 'Nice charger', 2),
+ ('02-00-08', 20, 'AC', 'Nice charger', 2),
+ ('02-00-09', 20, 'AC', 'Nice charger', 2),
+ ('02-01-00', 20, 'AC', 'Nice charger', 2),
+ ('02-01-01', 20, 'AC', 'Nice charger', 2),
+ ('02-01-02', 20, 'AC', 'Nice charger', 2),
+ ('02-01-03', 20, 'AC', 'Nice charger', 2),
+ ('02-01-04', 20, 'AC', 'Nice charger', 2),
+ ('02-01-05', 20, 'AC', 'Nice charger', 2),
+ ('02-01-06', 20, 'AC', 'Nice charger', 2),
+ ('02-01-07', 20, 'AC', 'Nice charger', 2),
+ ('02-01-08', 20, 'AC', 'Nice charger', 2),
+ ('02-01-09', 20, 'AC', 'Nice charger', 2),
+ ('03-00-00', 150, 'DC', 'Nice charger', 3),
+ ('03-00-01', 150, 'DC', 'Nice charger', 3),
+ ('03-00-02', 150, 'DC', 'Nice charger', 3),
+ ('03-00-03', 150, 'DC', 'Nice charger', 3),
+ ('03-00-04', 150, 'DC', 'Nice charger', 3),
+ ('03-01-00', 10, 'AC', 'Nice charger', 3),
+ ('03-01-01', 10, 'AC', 'Nice charger', 3),
+ ('03-01-02', 10, 'AC', 'Nice charger', 3),
+ ('03-01-03', 10, 'AC', 'Nice charger', 3),
+ ('03-01-04', 10, 'AC', 'Nice charger', 3);
 
 INSERT INTO cars (vin, registration_no, model, brand, capacity, description, acc_account_no) VALUES
 ('8AGW25JT38KC66775', 'FWS2936', 'R1S', 'Rivian', 100, 'That is some crazy description', 1),
@@ -264,11 +278,11 @@ INSERT INTO cars (vin, registration_no, model, brand, capacity, description, acc
 ('2DGRZV4Y52D4B5641', 'ESI8184', 'Taycan Sport Turismo', 'Porsche', 80, 'That is some crazy description', 5),
 ('3F1P667R76TZJ9662', 'DWR8470', 'e-tron GT', 'Audi', 80, 'That is some crazy description', 5);
 
-INSERT INTO charging (base_charge_level, charge_level, departure_dateime, cha_charger_id, car_vin) VALUES
-(30, 30, (NOW() + interval '1 month'), 1, '8AGW25JT38KC66775'), 
-(30, 30, (NOW() + interval '1 month'), 2, 'TMBWUTC46MZ3J9161'), 
-(30, 30, (NOW() + interval '1 month'), 3, '8BCTTKUX8JX8L4378'), 
-(70, 70, (NOW() + interval '1 month'), 4, '2TNH62B71YD1W6237'), 
-(70, 70, (NOW() + interval '1 month'), 5, 'YS4PPFMR05D2E1952'), 
-(90, 90, (NOW() + interval '1 month'), 6, '2DGRZV4Y52D4B5641'), 
-(50, 50, (NOW() + interval '1 month'), 7, '3F1P667R76TZJ9662');
+INSERT INTO charging (base_charge_level, charge_level, departure_datetime, cha_charger_code, car_vin) VALUES
+(30, 30, (NOW() + interval '1 month'), '01-00-00', '8AGW25JT38KC66775'), 
+(30, 30, (NOW() + interval '1 month'), '01-00-01', 'TMBWUTC46MZ3J9161'), 
+(30, 30, (NOW() + interval '1 month'), '01-00-08', '8BCTTKUX8JX8L4378'), 
+(70, 70, (NOW() + interval '1 month'), '01-01-01', '2TNH62B71YD1W6237'), 
+(70, 70, (NOW() + interval '1 month'), '01-01-03', 'YS4PPFMR05D2E1952'), 
+(90, 90, (NOW() + interval '1 month'), '01-01-04', '2DGRZV4Y52D4B5641'), 
+(50, 50, (NOW() + interval '1 month'), '01-00-05', '3F1P667R76TZJ9662');
