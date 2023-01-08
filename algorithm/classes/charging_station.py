@@ -42,30 +42,31 @@ class Charging_station:
         self.set_hour_to_go(current_time)
 
     def set_hour_to_go(self, current_time):
-        time_to_go = self.car.pickup_time - current_time
-        if (
-            time_to_go <= datetime.timedelta(hours=1)
-            and time_to_go >= datetime.timedelta()
-        ):
+        """
+        Checks if car is about to get picked up in less than an hour and sets appropriate tag.
+
+        Args:
+            current_time:      Current time.
+        """
+        time_to_go =self.car.pickup_time - current_time  
+        if time_to_go <= datetime.timedelta(hours=1)and time_to_go >= datetime.timedelta():
             self.hour_to_go = True
 
     def set_below_start(self):
-        if (
-            self.car.charge_level * self.car.car_capacity / 100
-            - self.car.charger_power * self.time_period
-            < self.car.start_charge_level * self.car.car_capacity / 100
-        ):
+        """
+        Checks if discharging car would bring it's energy level below starting energy level and sets tag.
+
+        Args:
+            current_time:      Current time.
+        """
+        if self.car.charge_level * self.car.car_capacity / 100 - self.car.charger_power * self.time_period < self.car.start_charge_level * self.car.car_capacity / 100:
             self.below_start = True
 
     def charge(self):
-        new = (
-            (
-                self.car.charge_level * self.car.car_capacity / 100
-                + Decimal(self.order) * self.car.charger_power * self.time_period
-            )
-            / self.car.car_capacity
-            * 100
-        )
+        """
+        Sets new battery level of a car (in real project it would be sensed by the real charging station).
+        """
+        new = (self.car.charge_level * self.car.car_capacity /100 + Decimal(self.order) *self.car.charger_power * self.time_period) /self.car.car_capacity*100
         self.new_charge_level = min(new, 100)
 
     def set_status(self):

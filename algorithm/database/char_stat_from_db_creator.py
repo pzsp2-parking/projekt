@@ -6,6 +6,13 @@ from classes.charging_car import Charging_car
 class Char_stat_from_db_creator:
     @staticmethod
     def get_charging_stations(parking_id, time_period):
+        """
+        Connects to database and creates list of active charging stations at given parking.
+
+        Args:
+            parking_id:     Id of given parking.
+            time_period:    How long untill next balancing order from operator.
+        """
         charging_stations = []
         stmt = f"SELECT * FROM cars_charging WHERE car_park_id={parking_id};"
         db_cur.execute(stmt)
@@ -40,26 +47,22 @@ class Char_stat_from_db_creator:
 
     @staticmethod
     def get_curr_time():
+        """
+        Gets current time from database.
+        """
         stmt2 = "SELECT now()::timestamp;"
         db_cur.execute(stmt2)
         curr_time = db_cur.fetchone()
         return curr_time[0]
 
-    @staticmethod
-    def insert_new_charging(station: Charging_station):
-        curr_time = Char_stat_from_db_creator.get_curr_time()
-        stmt = (
-            f"INSERT INTO charging (datetime, base_charge_level, charge_level, departure_dateime, cha_charger_id, car_vin)"
-            f"VALUES ('{curr_time}', {station.car.start_charge_level}, {station.new_charge_level}, '{station.car.pickup_time}',"
-            f"{station.charger_id}, '{station.car.car_vin}');"
-        )
-        db_conn.exec(stmt)
+        
+
 
 
 # CREATE TABLE charging (
 #     datetime          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 # 	base_charge_level NUMERIC(6, 2) NOT NULL,
 #     charge_level      NUMERIC(6, 2) NOT NULL,
-#     departure_dateime TIMESTAMP NOT NULL,
+#     departure_datetime TIMESTAMP NOT NULL,
 #     cha_charger_id    INTEGER NOT NULL,
 #     car_vin           VARCHAR(17) NOT NULL

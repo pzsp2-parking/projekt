@@ -17,6 +17,7 @@ class Charging_car:
             car_capacity:           Car battery capacity.
             charger_type:           AC or DC.
             charger_power:          Max power of the charger.
+            car_vin:                Car VIN number.
         """
         self.charge_level = charge_level
         self.start_charge_level = start_charge_level
@@ -27,10 +28,10 @@ class Charging_car:
         self.car_vin = car_vin
 
     def __str__(self) -> str:
-        retStr = f"\tcharge level: {self.charge_level}\t({type(self.charge_level)}),\n"
-        retStr += f"\tstart charge level: {self.start_charge_level},\t({type(self.start_charge_level)})\n"
-        retStr += f"\tpickup time: {self.pickup_time},\t({type(self.pickup_time)})\n"
-        retStr += f"\tcar capacity: {self.car_capacity},\t({type(self.car_capacity)})\n"
-        retStr += f"\tcharger type: {self.charger_type},\t({type(self.charger_type)})\n"
-        retStr += f"\tcharger power: {self.charger_power}\t({type(self.charger_power)})"
+        retStr = f"\tcharge level: {self.charge_level}\n"
+        retStr += f"\tstart charge level: {self.start_charge_level}\n"
+        retStr += f"\tpickup time: {self.pickup_time}\n"
+        retStr += f"\tcar capacity: {self.car_capacity}\n"
+        retStr += f"\tcharger type: {self.charger_type}\n"
+        retStr += f"\tcharger power: {self.charger_power}"
         return retStr
