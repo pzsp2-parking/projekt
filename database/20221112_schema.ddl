@@ -8,7 +8,7 @@ DROP TABLE IF EXISTS car_parks CASCADE;
 CREATE TABLE accounts (
     account_no          SERIAL NOT NULL,
     name                VARCHAR(20) NOT NULL,
-    password            VARCHAR(30) NOT NULL,
+    password            VARCHAR(64) NOT NULL,
     email_address       VARCHAR(20) NOT NULL,
     phone_no            CHAR(9) NOT NULL,
 	account_type        VARCHAR(8) NOT NULL,
