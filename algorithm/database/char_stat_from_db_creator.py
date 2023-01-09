@@ -55,9 +55,6 @@ class Char_stat_from_db_creator:
         curr_time = db_cur.fetchone()
         return curr_time[0]
 
-        
-
-
 
 # CREATE TABLE charging (
 #     datetime          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

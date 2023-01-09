@@ -151,7 +151,7 @@ def get_carparks():
         "parks": [
             {
                 "id": park.id,
-                "address": park.street + ' ' + park.addr_nr + ', ' + park.city,
+                "address": park.street + " " + park.addr_nr + ", " + park.city,
             }
             for park in parks
         ],

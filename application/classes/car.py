@@ -151,6 +151,30 @@ class Car:
             charge_history[time] = charge_level
         return charge_history
 
+    def get_all_charging_history(self) -> dict:
+        """
+        Gets all car's charging history divided by separate charging times
+        and later by datetime.
+
+        Return:
+            A dictionary with keys as departure times that divide history into
+            separate chargings.
+            Further, values of the dict are dicts with keys as datetimes of given
+            charging measurement and values - charge level.
+        """
+        charge_history = {}
+        stmt = f"SELECT datetime, charge_level, departure_time from charging WHERE car_vin='{self.vin}' AND {time_clause} ORDER BY datetime ASC;"
+        db_cur.execute(stmt)
+        for entry in db_cur.fetchall():
+            time = entry[0]
+            charge_level = float(entry[1])
+            departure = entry[2]
+            if departure in charge_history:
+                charge_history[departure][time] = charge_level
+            else:
+                charge_history[departure] = {}
+                charge_history[departure][time] = charge_level
+        return charge_history
 
     def is_parked(self) -> bool:
         """
