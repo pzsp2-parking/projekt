@@ -110,6 +110,31 @@ class Car:
             cars.append(Car.get_car(vin))
         return cars
 
+    def get_charging_history(self, curr: bool = True):
+        """
+        Gets history information from database from current charging.
+
+        Args:
+            curr:       Determines if charging history should relate to current charging
+                        or all past charging (if curr == False)
+
+        Returns:
+            Dictionary with keys - time of measurement, value - charge level
+        """
+        charge_history = {}
+        if curr:
+            time_clause = "departure_datetime>now()"
+        else:
+            time_clause = "departure_datetime<=now()"
+        stmt = f"SELECT datetime, charge_level from charging WHERE car_vin='{self.vin}' AND {time_clause} ORDER BY datetime ASC;"
+        db_cur.execute(stmt)
+        for entry in db_cur.fetchall():
+            time = entry[0]
+            charge_level = float(entry[1])
+            charge_history[time] = charge_level
+        return charge_history
+
+
     def is_parked(self) -> bool:
         """
         Checks if given car is parked or not.
