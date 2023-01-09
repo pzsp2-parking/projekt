@@ -183,6 +183,30 @@ class Client(Account):
             if new_car.vin not in ([x.vin for x in self.cars]):
                 self.cars.append(new_car)
 
+    def get_car_charging_inf(self, vin: str, if_curr: bool = True):
+        """
+        Gets charging information about chosen client's car.
+        Provides information about charging history and current charging level.
+        if_curr == True: returns history of current charging.
+        if_curr == False: returns whole history without current charging.
+
+        Args:
+            vin:        VIN of chosen car.
+            if_curr:    If history should relate to current or past chargings.
+
+        Returns:
+            Tuple (curr_level, charging_history).
+            Where curr_level float value of current charge level.
+                  charging_history - chosen charging history.
+        """
+        try:
+            car = [x for x in self.cars if x.vin==vin][0]
+        except Exception as e:
+            raise Exception("Car does not belong to the user.")
+        curr_level = car.get_curr_charge_level()
+        charging_history = car.get_charging_history(if_curr)
+        return (curr_level, charging_history)
+
     def park_car(
         self,
         vin: str,

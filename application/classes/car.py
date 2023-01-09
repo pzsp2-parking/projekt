@@ -110,9 +110,26 @@ class Car:
             cars.append(Car.get_car(vin))
         return cars
 
-    def get_charging_history(self, curr: bool = True):
+    def get_curr_charge_level(self) -> float:
+        """
+        Gets current charge level of a charging car.
+
+        Returns:
+            Current charge level.
+
+        Raises:
+            Exception: if chosen car is not parked.
+        """
+        if not self.is_parked():
+            raise Exception("Car is not charging!")
+        stmt = f"SELECT charge_level from charging WHERE car_vin='{self.vin}' ORDER BY datetime DESC LIMIT 1;"
+        db_cur.execute(stmt)
+        return float(db_cur.fetchone()[0])
+
+    def get_charging_history(self, curr: bool = True) -> dict:
         """
         Gets history information from database from current charging.
+        Dictionary keys of result are sorted in ascending order.
 
         Args:
             curr:       Determines if charging history should relate to current charging
