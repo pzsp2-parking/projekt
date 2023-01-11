@@ -119,7 +119,7 @@ function Park(props) {
         </p>
           
         {parkMap &&
-          <p>{parkMap}</p>
+          <p>{parkMap.split('\n').map(row => <>{row}<br /></>)}</p>
         }
 
         <p>
