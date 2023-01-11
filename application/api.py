@@ -205,9 +205,6 @@ def getMap():
     strParkMap = ''
     for row in parkMap:
         for elem in row:
-            if elem == 0:
-                strParkMap += '.'
-            else:
-                strParkMap += '#'
+            strParkMap += str(elem)
         strParkMap += '\n'
     return {"parkMap": strParkMap[:-1]}

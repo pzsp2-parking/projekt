@@ -105,14 +105,14 @@ class Parking:
                 max_row = row
             if col > max_col:
                 max_col = col
-        park_map = empty_parking(max_col + 1, max_row + 1)
+        park_map = empty_parking(max_row + 1, max_col + 1)
         stmt_occupied = (
             f"SELECT charger_code FROM cars_charging WHERE car_park_id={id};"
         )
         db_cur.execute(stmt_occupied)
         for code in db_cur.fetchall():
             row, col = charger_place(code[0])
-            park_map[col][row] = OCCUPIED
+            park_map[row][col] = OCCUPIED
         print(park_map)
         return park_map
 
