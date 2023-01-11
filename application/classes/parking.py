@@ -112,7 +112,7 @@ class Parking:
         db_cur.execute(stmt_occupied)
         for code in db_cur.fetchall():
             row, col = charger_place(code[0])
-            park_map[row][col] = OCCUPIED
+            park_map[col][row] = OCCUPIED
         print(park_map)
         return park_map
 

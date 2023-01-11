@@ -145,10 +145,15 @@ class Car:
             time_clause = "departure_datetime<=now()"
         stmt = f"SELECT datetime, charge_level from charging WHERE car_vin='{self.vin}' AND {time_clause} ORDER BY datetime ASC;"
         db_cur.execute(stmt)
+        charge_history = []
         for entry in db_cur.fetchall():
             time = entry[0]
             charge_level = float(entry[1])
-            charge_history[time] = charge_level
+            # charge_history[time] = charge_level
+            charge_history.append({
+                "time": time,
+                "charge_level": charge_level,
+            })
         return charge_history
 
     def get_all_charging_history(self) -> dict:

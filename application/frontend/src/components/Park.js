@@ -17,6 +17,7 @@ function Park(props) {
   })
 
 	const [carparks, setCarparks] = useState([])
+	const [parkMap, setParkMap] = useState()
 
 	useEffect(() => {
     axios({
@@ -66,6 +67,28 @@ function Park(props) {
     event.preventDefault()
   }
 
+  function getMap(parkId) {
+    axios({
+      method: "POST",
+      url:"/api/getMap",
+      headers: {
+        Authorization: 'Bearer ' + props.token
+      },
+      data: {
+				parkId: parkId
+			}
+    })
+    .then((response) => {
+      setParkMap(response.data.parkMap)
+    }).catch((error) => {
+      if (error.response) {
+        console.log(error.response)
+        console.log(error.response.status)
+        console.log(error.response.headers)
+			}
+    })
+  }
+
   function handleChange(event) { 
     const {value, name} = event.target
     setParkForm(prevNote => ({
@@ -85,19 +108,26 @@ function Park(props) {
 						options={(carparks).map(opt => ({ label: opt.address, value: opt.id }))}
 						isClearable
 						placeholder={"Wybierz parking"}
-						onChange={(opt) =>
+						onChange={(opt) => {
 							setParkForm(prevNote => ({
 									...prevNote, parking: opt.value
 								})
-							)}
+							);
+              getMap(opt.value)
+            }}
           />
         </p>
+          
+        {parkMap &&
+          <p>{parkMap}</p>
+        }
+
         <p>
           <input onChange={handleChange} 
                 type="text"
                 text={parkForm.chosenCharger} 
                 name="chosenCharger" 
-                placeholder="Chosen charger ID" 
+                placeholder="Chosen charger" 
                 value={parkForm.chosenCharger} />
         </p>
         <p>
