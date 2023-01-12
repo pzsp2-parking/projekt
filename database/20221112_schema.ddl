@@ -269,14 +269,14 @@ VALUES
  ('03-01-04', 10, 'AC', 'Nice charger', 3);
 
 INSERT INTO cars (vin, registration_no, model, brand, capacity, description, acc_account_no) VALUES
-('8AGW25JT38KC66775', 'FWS2936', 'R1S', 'Rivian', 2000.20, 'That is some crazy description', 1),
-('TMBWUTC46MZ3J9161', 'RP59547', 'R1T', 'Rivian', 2000.20, 'That is some crazy description', 2),
-('8BCTTKUX8JX8L4378', 'NKE9095', 'Taycan Cross Turismo', 'Porsche', 2000.20, 'That is some crazy description', 3),
-('2TNH62B71YD1W6237', 'PL91879', 'I-Pace', 'Jaguar', 2000.20, 'That is some crazy description', 3),
-('YS4PPFMR05D2E1952', 'SZA9020', 'e-tron Sportback', 'Audi', 2000.20, 'That is some crazy description', 4),
-('WBAMPXN54ZLLL6978', 'WGR0691', 'e-tron', 'Audi', 2000.20, 'That is some crazy description', 5),
-('2DGRZV4Y52D4B5641', 'ESI8184', 'Taycan Sport Turismo', 'Porsche', 2000.20, 'That is some crazy description', 5),
-('3F1P667R76TZJ9662', 'DWR8470', 'e-tron GT', 'Audi', 2000.20, 'That is some crazy description', 5);
+('8AGW25JT38KC66775', 'FWS2936', 'R1S', 'Rivian', 100, 'That is some crazy description', 1),
+('TMBWUTC46MZ3J9161', 'RP59547', 'R1T', 'Rivian', 100, 'That is some crazy description', 2),
+('8BCTTKUX8JX8L4378', 'NKE9095', 'Taycan Cross Turismo', 'Porsche', 100, 'That is some crazy description', 3),
+('2TNH62B71YD1W6237', 'PL91879', 'I-Pace', 'Jaguar', 100, 'That is some crazy description', 3),
+('YS4PPFMR05D2E1952', 'SZA9020', 'e-tron Sportback', 'Audi', 100, 'That is some crazy description', 4),
+('WBAMPXN54ZLLL6978', 'WGR0691', 'e-tron', 'Audi', 100, 'That is some crazy description', 5),
+('2DGRZV4Y52D4B5641', 'ESI8184', 'Taycan Sport Turismo', 'Porsche', 100, 'That is some crazy description', 5),
+('3F1P667R76TZJ9662', 'DWR8470', 'e-tron GT', 'Audi', 100, 'That is some crazy description', 5);
 
 INSERT INTO charging (base_charge_level, charge_level, departure_datetime, cha_charger_code, car_vin) VALUES
 (30, 30, (NOW() + interval '1 month'), '01-00-00', '8AGW25JT38KC66775'), 

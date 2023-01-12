@@ -175,6 +175,13 @@ class TestCharging_station(unittest.TestCase):
         station.set_order(0.5)
         self.assertEqual(station.energy_usage(), Decimal(10))
 
+    def test_charge(self):
+        car = Charging_car(**TEST_CAR1)
+        station = Charging_station(car, 12, 20)
+        station.order = 1
+        station.charge()
+        self.assertEqual(station.new_charge_level, Decimal(75))
+
 
 if __name__ == "__main__":
     unittest.main()
