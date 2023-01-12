@@ -151,8 +151,60 @@ def get_carparks():
         "parks": [
             {
                 "id": park.id,
-                "address": park.street + ' ' + park.addr_nr + ', ' + park.city,
+                "address": park.street + " " + park.addr_nr + ", " + park.city,
             }
             for park in parks
         ],
     }
+
+
+@app.route("/api/changeLeaveDate", methods=["POST"])
+@jwt_required()
+def changeLeaveDate():
+    vin = request.json.get("vin", None)
+    car = Car.get_car(vin)
+    leave = request.json.get("leaveDate", None)
+    leaveDatetime = datetime.strptime(leave, "%Y-%m-%dT%H:%M:%S.%fz")
+    leaveDatetime += timedelta(hours=1)
+    car.change_departure(leaveDatetime)
+    response = jsonify({"msg": "change date successful"})
+    return response
+
+
+@app.route("/api/getDetails", methods=["POST"])
+@jwt_required()
+def getDetails():
+    vin = request.json.get("vin", None)
+    car = Car.get_car(vin)
+    leaveDatetime = datetime.now() + timedelta(hours=8)
+    leaveDatetime -= timedelta(hours=1)
+    strDate = leaveDatetime.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+    currCharging = car.get_charging_history(True)
+    history = car.get_charging_history(False)
+    return {
+        "leaveDate": strDate,
+        "currCharging": currCharging,
+        "history": history,
+    }
+
+
+@app.route("/api/getCurrCharging", methods=["POST"])
+@jwt_required()
+def getCurrCharging():
+    vin = request.json.get("vin", None)
+    car = Car.get_car(vin)
+    currCharging = car.get_charging_history(True)
+    return {"currCharging": currCharging}
+
+
+@app.route("/api/getMap", methods=["POST"])
+@jwt_required()
+def getMap():
+    parkId = request.json.get("parkId", None)
+    parkMap = Parking.get_parking_map(parkId)
+    strParkMap = ''
+    for row in parkMap:
+        for elem in row:
+            strParkMap += str(elem)
+        strParkMap += '\n'
+    return {"parkMap": strParkMap[:-1]}

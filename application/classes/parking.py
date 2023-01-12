@@ -105,7 +105,7 @@ class Parking:
                 max_row = row
             if col > max_col:
                 max_col = col
-        park_map = empty_parking(max_col + 1, max_row + 1)
+        park_map = empty_parking(max_row + 1, max_col + 1)
         stmt_occupied = (
             f"SELECT charger_code FROM cars_charging WHERE car_park_id={id};"
         )

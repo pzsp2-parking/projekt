@@ -4,10 +4,8 @@ import axios from 'axios';
 
 import './Dashboard.css';
 
-// TODO: Add functions for parking
-
-function details(event) {
-
+function details(vin, navigate) {
+  navigate("/details", {state: {vin: vin}})
 }
 
 function leave(token, cars, index, setClientData) {
@@ -47,7 +45,7 @@ const CarTable = (props) => {
         <td>{car.model}</td>
         <td>{car.parked ? 'Yes' : 'No'}</td>
         <td>{car.parked &&
-          <button type="button" class="btn btn-link" onClick={details}>Details</button>}
+          <button type="button" class="btn btn-link" onClick={() => details(car.vin, props.navigate)}>Details</button>}
         </td>
         <td>{car.parked ?
           (<button type="button" class="btn btn-danger" onClick={() => leave(props.token, props.cars, index, props.setClientData)}>Leave</button>)

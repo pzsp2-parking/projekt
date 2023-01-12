@@ -38,7 +38,7 @@ class Account:
             True:       When password is correct.
             False:      When password is incorrect.
         """
-        hashed_password = hashlib.sha256(pwd .encode('utf-8')).hexdigest()
+        hashed_password = hashlib.sha256(pwd.encode("utf-8")).hexdigest()
         return hashed_password == self._password
 
     def get_id(self) -> int:
@@ -131,7 +131,7 @@ class Client(Account):
         Raises:
             UniqueViolation.
         """
-        hashed_password = hashlib.sha256(password.encode('utf-8')).hexdigest()
+        hashed_password = hashlib.sha256(password.encode("utf-8")).hexdigest()
         client = Client(username, hashed_password, mail, phone_no)
         stmt_create = (
             f"INSERT INTO accounts (name, password, email_address, phone_no, account_type)"
@@ -182,6 +182,47 @@ class Client(Account):
         for new_car in cars:
             if new_car.vin not in ([x.vin for x in self.cars]):
                 self.cars.append(new_car)
+
+    def get_all_car_history(self, vin: str) -> dict:
+        """
+        Gets all charging history for given car divided by separate chargings.
+
+        Args:
+            vin:        VIN of chosen car.
+
+        Returns:
+            Dictionary within a dictionary with history of car charging.
+        """
+        try:
+            car = [x for x in self.cars if x.vin == vin][0]
+        except Exception as e:
+            raise Exception("Car does not belong to the user.")
+        charging_history = car.get_all_charging_history()
+        return charging_history
+
+    def get_car_charging_inf(self, vin: str, if_curr: bool = True):
+        """
+        Gets charging information about chosen client's car.
+        Provides information about charging history and current charging level.
+        if_curr == True: returns history of current charging.
+        if_curr == False: returns whole history without current charging.
+
+        Args:
+            vin:        VIN of chosen car.
+            if_curr:    If history should relate to current or past chargings.
+
+        Returns:
+            Tuple (curr_level, charging_history).
+            Where curr_level float value of current charge level.
+                  charging_history - chosen charging history.
+        """
+        try:
+            car = [x for x in self.cars if x.vin == vin][0]
+        except Exception as e:
+            raise Exception("Car does not belong to the user.")
+        curr_level = car.get_curr_charge_level()
+        charging_history = car.get_charging_history(if_curr)
+        return (curr_level, charging_history)
 
     def park_car(
         self,

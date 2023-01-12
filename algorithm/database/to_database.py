@@ -38,9 +38,7 @@ class To_database:
         for station in stations:
             stmt = (
                 f"INSERT INTO charging (datetime, base_charge_level, charge_level, departure_datetime, cha_charger_code, car_vin)"
-                f"VALUES (\'{curr_time}\', {station.car.start_charge_level}, {station.new_charge_level}, \'{station.car.pickup_time}\',"
-                f"\'{station.charger_id}\', \'{station.car.car_vin}\');"
+                f"VALUES ('{curr_time}', {station.car.start_charge_level}, {station.new_charge_level}, '{station.car.pickup_time}',"
+                f"'{station.charger_id}', '{station.car.car_vin}');"
             )
             db_conn.exec(stmt)
-
-

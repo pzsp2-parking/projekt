@@ -6,16 +6,16 @@ from classes.carpark import Carpark
 from classes.operator_mockup import Operator_mockup
 from classes.balancer import Balancer
 from database.to_database import To_database
-PORT_PROMET=8000
 
+PORT_PROMET = 8000
 
 
 def main():
     start_http_server(PORT_PROMET)
-    e_usg = Gauge('energy_usg', 'Energy usage')
-    e_req = Gauge('energy_req', 'Energy requested usage')
-    cars_nr = Gauge('cars_nr', 'Number of cars on the parking')
-    
+    e_usg = Gauge("energy_usg", "Energy usage")
+    e_req = Gauge("energy_req", "Energy requested usage")
+    cars_nr = Gauge("cars_nr", "Number of cars on the parking")
+
     op = Operator_mockup(-50, 150)
     b = Balancer()
     cp = Carpark(1)
@@ -31,7 +31,7 @@ def main():
         e_req.set(demand)
         cars_nr.set(len(cp.active_charging_stations))
         sleep(5)
-    
 
-if __name__=="__main__":
+
+if __name__ == "__main__":
     main()
