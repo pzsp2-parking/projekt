@@ -138,21 +138,19 @@ class Car:
         Returns:
             Dictionary with keys - time of measurement, value - charge level
         """
-        charge_history = {}
+        charge_history = []
         if curr:
             time_clause = "departure_datetime>now()"
         else:
             time_clause = "departure_datetime<=now()"
         stmt = f"SELECT datetime, charge_level from charging WHERE car_vin='{self.vin}' AND {time_clause} ORDER BY datetime ASC;"
         db_cur.execute(stmt)
-        charge_history = []
         for entry in db_cur.fetchall():
             time = entry[0]
             charge_level = float(entry[1])
-            # charge_history[time] = charge_level
             charge_history.append({
-                "time": time,
-                "charge_level": charge_level,
+                'x': time,
+                'y': charge_level
             })
         return charge_history
 
@@ -167,18 +165,20 @@ class Car:
             Further, values of the dict are dicts with keys as datetimes of given
             charging measurement and values - charge level.
         """
+        time_clause = "departure_datetime<=now()"
         charge_history = {}
-        stmt = f"SELECT datetime, charge_level, departure_time from charging WHERE car_vin='{self.vin}' AND {time_clause} ORDER BY datetime ASC;"
+        stmt = f"SELECT datetime, charge_level, departure_datetime from charging WHERE car_vin='{self.vin}' AND {time_clause} ORDER BY departure_datetime DESC, datetime ASC;"
         db_cur.execute(stmt)
         for entry in db_cur.fetchall():
             time = entry[0]
             charge_level = float(entry[1])
             departure = entry[2]
-            if departure in charge_history:
-                charge_history[departure][time] = charge_level
-            else:
-                charge_history[departure] = {}
-                charge_history[departure][time] = charge_level
+            if str(departure) not in charge_history:
+                charge_history[str(departure)] = []
+            charge_history[str(departure)].append({
+                'x': time,
+                'y': charge_level
+            })
         return charge_history
 
     def is_parked(self) -> bool:

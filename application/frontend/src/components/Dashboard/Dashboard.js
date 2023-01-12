@@ -4,8 +4,8 @@ import axios from 'axios';
 
 import './Dashboard.css';
 
-function details(vin, navigate) {
-  navigate("/details", {state: {vin: vin}})
+function details(vin, parked, navigate) {
+  navigate("/details", {state: {vin: vin, parked: parked}})
 }
 
 function leave(token, cars, index, setClientData) {
@@ -44,8 +44,9 @@ const CarTable = (props) => {
         <td>{car.brand}</td>
         <td>{car.model}</td>
         <td>{car.parked ? 'Yes' : 'No'}</td>
-        <td>{car.parked &&
-          <button type="button" class="btn btn-link" onClick={() => details(car.vin, props.navigate)}>Details</button>}
+        <td>{car.parked ?
+          <button type="button" class="btn btn-link" onClick={() => details(car.vin, car.parked, props.navigate)}>Details</button>
+          : <button type="button" class="btn btn-link" onClick={() => details(car.vin, car.parked, props.navigate)}>History</button>}
         </td>
         <td>{car.parked ?
           (<button type="button" class="btn btn-danger" onClick={() => leave(props.token, props.cars, index, props.setClientData)}>Leave</button>)

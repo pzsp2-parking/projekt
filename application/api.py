@@ -180,11 +180,17 @@ def getDetails():
     leaveDatetime -= timedelta(hours=1)
     strDate = leaveDatetime.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
     currCharging = car.get_charging_history(True)
-    history = car.get_charging_history(False)
+    history = car.get_all_charging_history()
+    hist = []
+    for key in history.keys():
+        hist.append({
+            'leave': datetime.strptime(key.split('.')[0], "%Y-%m-%d %H:%M:%S"),
+            'records': history[key]
+        })
     return {
         "leaveDate": strDate,
         "currCharging": currCharging,
-        "history": history,
+        "history": hist,
     }
 
 

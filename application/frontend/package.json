@@ -11,6 +11,7 @@
     "neo-async": "^2.6.2",
     "react": "^18.2.0",
     "react-bootstrap": "^2.7.0",
+    "react-charts": "^2.0.0-beta.7",
     "react-datetime-picker": "^4.1.1",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.4.3",
