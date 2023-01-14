@@ -236,7 +236,7 @@ class Car:
             raise Exception("Car is not parked")
         stmt = f"SELECT departure_datetime from charging WHERE car_vin='{self.vin}' ORDER BY datetime DESC LIMIT 1;"
         db_cur.execute(stmt)
-        return float(db_cur.fetchone()[0])
+        return db_cur.fetchone()[0]
 
     def change_departure(self, new_time: datetime) -> None:
         """
