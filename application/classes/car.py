@@ -225,6 +225,19 @@ class Car:
 
         db_conn.exec_change(stmt_insert)
 
+    def get_departure_time(self) -> datetime:
+        """
+        Gets current planned departure time of a parked car from database.
+
+        Raises:
+            Exception:        When chosen car is not parked.
+        """
+        if not self.is_parked():
+            raise Exception("Car is not parked")
+        stmt = f"SELECT departure_datetime from charging WHERE car_vin='{self.vin}' ORDER BY datetime DESC LIMIT 1;"
+        db_cur.execute(stmt)
+        return float(db_cur.fetchone()[0])
+
     def change_departure(self, new_time: datetime) -> None:
         """
         Changes planned departure time of a parked car.
