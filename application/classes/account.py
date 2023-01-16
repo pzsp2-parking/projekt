@@ -105,13 +105,17 @@ class Client(Account):
         """
         stmt_client = (
             f"SELECT password, email_address, phone_no "
-            f"FROM accounts WHERE name='{username}';"
+            f"FROM accounts WHERE name='{username}' AND account_type='CLIENT';"
         )
         db_cur.execute(stmt_client)
-        pwd, mail, phone_no = db_cur.fetchone()
-        client = Client(username, pwd, mail, phone_no)
-        cars = car.Car.get_client_cars(client)
-        client.save_cars(cars)
+        try:
+            pwd, mail, phone_no = db_cur.fetchone()
+            client = Client(username, pwd, mail, phone_no)
+            cars = car.Car.get_client_cars(client)
+            client.save_cars(cars)
+        except Exception as e:
+            print(e)
+            return -1
         return client
 
     @staticmethod
@@ -304,10 +308,14 @@ class Employee(Account):
             A new Employee object.
         """
         stmt_employee = (
-            f"SELECT password, email_address, phone_no, cpa_car_park_id"
-            f"FROM accounts WHERE name='{username}';"
+            f"SELECT password, email_address, phone_no, cpa_car_park_id "
+            f"FROM accounts WHERE name='{username}' AND account_type='EMPLOYEE';"
         )
         db_cur.execute(stmt_employee)
-        pwd, mail, phone_no, parking = db_cur.fetchone()
-        employee = Employee(username, pwd, mail, phone_no, parking)
+        try:
+            pwd, mail, phone_no, parking = db_cur.fetchone()
+            employee = Employee(username, pwd, mail, phone_no, parking)
+        except Exception as e:
+            print(e)
+            return -1
         return employee

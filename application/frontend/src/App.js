@@ -10,6 +10,7 @@ import Header from './components/Header';
 import Park from './components/Park';
 import useToken from './components/useToken';
 import CarDetails from './components/CarDetails';
+import EmpPage from './components/EmpPage';
 
 function App() {
   const { token, removeToken, setToken } = useToken();
@@ -29,6 +30,7 @@ function App() {
         :(
           <>
             <Routes>
+              <Route exact path="/empPage" element={<div><Header token={removeToken}/><EmpPage token={token} setToken={setToken}/></div>}></Route>
               <Route exact path="/addCar" element={<div><Header token={removeToken}/><AddCar token={token} setToken={setToken}/></div>}></Route>
               <Route exact path="/park" element={<div><Header token={removeToken}/><Park token={token} setToken={setToken}/></div>}></Route>
               <Route exact path="/details" element={<div><Header token={removeToken}/><CarDetails token={token} setToken={setToken}/></div>}></Route>

@@ -11,7 +11,7 @@ from flask_jwt_extended import (
 )
 
 
-from classes.account import Client
+from classes.account import Client, Employee
 from classes.car import Car
 from classes.parking import Parking
 
@@ -48,12 +48,27 @@ def create_token():
     cli = Client.get_client(login)
 
     if cli == -1:
-        return {"msg": "No account with given login"}, 401
+        emp = Employee.get_employee(login)
+
+        if emp == -1:
+            return {"msg": "No account with given login"}, 401
+        elif not emp.check_password(password):
+            return {"msg": "Wrong password"}, 401
+
+        access_token = create_access_token(identity=login)
+        response = {
+            "access_token": access_token,
+            "account_type": "emp"
+        }
+        return response
     elif not cli.check_password(password):
         return {"msg": "Wrong password"}, 401
 
     access_token = create_access_token(identity=login)
-    response = {"access_token": access_token}
+    response = {
+        "access_token": access_token,
+        "account_type": "cli"
+    }
     return response
 
 

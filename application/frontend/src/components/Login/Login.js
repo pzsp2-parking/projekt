@@ -29,7 +29,10 @@ function Login(props) {
     })
     .then((response) => {
       props.setToken(response.data.access_token)
-      navigate("/dashboard");
+      if (response.data.account_type == "cli")
+        navigate("/dashboard");
+      else
+        navigate("/empPage");
     }).catch((error) => {
       if (error.response) {
         console.log(error.response)
