@@ -4,6 +4,8 @@ import axios from 'axios';
 import DateTimePicker from 'react-datetime-picker'
 import Select from 'react-select'
 
+import MapGrid from './ParkMap/ParkMap';
+
 function Park(props) {
 
   const navigate = useNavigate();
@@ -119,7 +121,10 @@ function Park(props) {
         </p>
           
         {parkMap &&
-          <p>{parkMap.split('\n').map(row => <>{row}<br /></>)}</p>
+          <div>
+            <MapGrid parkMap={parkMap} />
+            <p />
+          </div>
         }
 
         <p>
@@ -145,7 +150,7 @@ function Park(props) {
                 text={parkForm.currentCharge} 
                 name="currentCharge" 
                 placeholder="Current charge level" 
-                value={parkForm.currentCharge} />
+                value={parkForm.currentCharge} />%
         </p>
 
         <p>
