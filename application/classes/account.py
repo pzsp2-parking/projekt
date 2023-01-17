@@ -114,7 +114,7 @@ class Client(Account):
             cars = car.Car.get_client_cars(client)
             client.save_cars(cars)
         except Exception as e:
-            print(e)
+            # print(e)
             return -1
         return client
 

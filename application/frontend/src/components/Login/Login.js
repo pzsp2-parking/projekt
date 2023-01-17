@@ -29,7 +29,7 @@ function Login(props) {
     })
     .then((response) => {
       props.setToken(response.data.access_token)
-      if (response.data.account_type == "cli")
+      if (response.data.account_type === "cli")
         navigate("/dashboard");
       else
         navigate("/empPage");

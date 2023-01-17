@@ -229,3 +229,34 @@ def getMap():
             strParkMap += str(elem)
         strParkMap += '\n'
     return {"parkMap": strParkMap[:-1]}
+
+
+@app.route("/api/empData", methods=["POST"])
+@jwt_required()
+def empData():
+    username = get_jwt_identity()
+    emp = Employee.get_employee(username)
+    park = Parking.get_employee_parking(username)
+    cars = park.get_all_cars()
+
+    parkMap = Parking.get_parking_map(emp.parking)
+    strParkMap = ''
+    for row in parkMap:
+        for elem in row:
+            strParkMap += str(elem)
+        strParkMap += '\n'
+
+    return {
+        "parkAddress": park.street + " " + park.addr_nr + ", " + park.city,
+        "parkMap": strParkMap[:-1],
+        "cars": [
+            {
+                "vin": car.vin,
+                "reg_no": car.reg_no,
+                "model": car.model,
+                "brand": car.brand,
+                "parked": car.is_parked(),
+            }
+            for car in cars
+        ],
+    }

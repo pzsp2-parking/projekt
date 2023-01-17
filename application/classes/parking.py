@@ -126,9 +126,11 @@ class Parking:
         cars = []
         stmt = f"SELECT vin FROM cars_charging WHERE car_park_id='{self.id}'"
         db_cur.execute(stmt)
-        for vin in db_cur.fetchall():
-            car = car.Car.get_car(vin)
-            cars.append(car)
+        vin_list = [vin[0] for vin in db_cur.fetchall()]
+        for vin in vin_list:
+            print(vin)
+            parked_car = car.Car.get_car(vin)
+            cars.append(parked_car)
         return cars
 
 
