@@ -191,7 +191,7 @@ def changeLeaveDate():
 def getDetails():
     vin = request.json.get("vin", None)
     car = Car.get_car(vin)
-    leaveDatetime = datetime.now() + timedelta(hours=8)
+    leaveDatetime = car.get_departure_time()
     leaveDatetime -= timedelta(hours=1)
     strDate = leaveDatetime.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
     currCharging = car.get_charging_history(True)
@@ -214,8 +214,13 @@ def getDetails():
 def getCurrCharging():
     vin = request.json.get("vin", None)
     car = Car.get_car(vin)
+    leaveDatetime = car.get_departure_time()
+    leaveDatetime -= timedelta(hours=1)
+    strDate = leaveDatetime.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
     currCharging = car.get_charging_history(True)
-    return {"currCharging": currCharging}
+    return {"currCharging": currCharging,
+            "leaveDatetime": leaveDatetime
+           }
 
 
 @app.route("/api/getMap", methods=["POST"])

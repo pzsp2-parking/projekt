@@ -113,7 +113,6 @@ class Parking:
         for code in db_cur.fetchall():
             row, col = charger_place(code[0])
             park_map[row][col] = OCCUPIED
-        print(park_map)
         return park_map
 
     def get_all_cars(self) -> list[car.Car]:
@@ -128,7 +127,6 @@ class Parking:
         db_cur.execute(stmt)
         vin_list = [vin[0] for vin in db_cur.fetchall()]
         for vin in vin_list:
-            print(vin)
             parked_car = car.Car.get_car(vin)
             cars.append(parked_car)
         return cars
