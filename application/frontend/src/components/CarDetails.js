@@ -16,7 +16,7 @@ function CarDetails(props) {
   })
 
   const [currCharging, setCurrCharging] = useState([{x: Date.now(), y: 50}])
-  const [history, setHistory] = useState(null)
+  const [history, setHistory] = useState([])
   const [histElem, setHistElem] = useState(0)
 
   const getCurrCharging = () => {
@@ -124,7 +124,7 @@ function CarDetails(props) {
       </div>
       }
 
-      {history &&
+      {history.length > 0 &&
         <div>
           <h5>Historical charging details</h5>
           <button type="button" class="btn btn-info" onClick={() => setHistElem((histElem - 1 + history.length) % history.length)}>{'<'}</button>
